@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="robots" content="noindex">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Building a knowledge base with Claude · Pinky Gohil</title>
+<meta name="description" content="How I built an internal knowledge base with Claude: one searchable library for case studies and content that turns any case study into an on-brand PowerPoint slide.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* tokens match pinkygohil.work */
+  :root{
+    --paper:#fff; --wash:#f2f2ef; --wash2:#e9e9e5; --ink:#0b1026; --body:#3a3e52; --mute:#5f6375; --line:#e3e3df;
+    --blue:#3d63ff; --violet:#a26bff; --violet-ink:#7340e6; --amber:#ffb23f; --ok:#22c55e;
+    --space:#070b1c; --space2:#151d4a;
+    --display:"Geist","Helvetica Neue",Arial,sans-serif; --text:"Instrument Sans","Helvetica Neue",Arial,sans-serif;
+    --r-panel:32px; --r-card:20px; --r-tile:14px; --r-pill:999px;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.6 var(--text);-webkit-font-smoothing:antialiased}
+  a{color:var(--violet-ink)}
+  .wrap{max-width:1440px;margin:0 auto;padding:0 clamp(16px,3.4vw,48px)}
+
+  /* soft space-colored wash, as on the portfolio hero */
+  body::before{content:"";position:absolute;top:0;right:0;width:70vw;height:760px;z-index:-1;pointer-events:none;
+    background:radial-gradient(60% 60% at 75% 25%,rgba(162,107,255,.22),transparent 70%),radial-gradient(40% 45% at 95% 55%,rgba(61,99,255,.12),transparent 70%)}
+
+  header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.8);backdrop-filter:blur(12px)}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  header .who{font:600 17px var(--display);letter-spacing:-.01em}
+  header .who span{color:var(--mute);font-weight:400}
+  header nav a{color:var(--body);text-decoration:none;margin-left:6px;font-size:15px;padding:7px 14px;border-radius:var(--r-pill);transition:background .2s}
+  header nav a:hover{background:var(--wash);color:var(--ink)}
+
+  .hero{padding:56px 0 40px}
+  .eyebrow{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);font-weight:500;display:flex;align-items:center;gap:8px}
+  .eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(34,197,94,.18)}
+  h1{font:600 clamp(2.6rem,6vw,5.2rem)/.98 var(--display);letter-spacing:-.055em;margin:18px 0 22px;max-width:1000px;color:var(--ink)}
+  .lede{color:var(--body);max-width:760px;margin:0;font-size:clamp(1.1rem,1.5vw,1.3rem);line-height:1.55}
+  .facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+  .facts span{font-size:13.5px;border:1px solid var(--ink);border-radius:var(--r-pill);padding:6px 16px;color:var(--ink);background:transparent}
+  .facts span:first-child{background:var(--ink);color:#fff}
+
+  .split{display:grid;grid-template-columns:minmax(420px,520px) 1fr;gap:24px;align-items:stretch;height:calc(100vh - 96px);min-height:640px;max-height:980px;margin-bottom:40px;scroll-margin-top:80px}
+  .chat{background:var(--wash);border-radius:var(--r-panel);overflow:hidden;display:flex;flex-direction:column;min-height:0}
+  .chat-head{display:flex;align-items:center;gap:10px;padding:14px 20px;background:rgba(242,242,239,.96);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);flex:none}
+  .dots{display:flex;gap:6px}.dots i{width:9px;height:9px;border-radius:50%;background:var(--wash2);display:block;border:1px solid #d6d6d1}
+  .chat-head b{font:600 14px var(--display)}
+  .chat-head small{color:var(--mute);margin-left:auto;font-size:12.5px}
+  .thread{padding:24px 18px 10px;flex:1;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#cfcfca transparent}
+
+  .step{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);
+    display:flex;align-items:center;gap:10px;margin:28px 0 14px}
+  .step:first-child{margin-top:0}
+  .step::before,.step::after{content:"";height:1px;background:var(--line);flex:1}
+  .step b{color:var(--violet-ink);font-family:var(--display)}
+
+  .msg{display:flex;gap:10px;margin:0 0 14px;opacity:0;transform:translateY(10px);transition:.6s var(--ease)}
+  .msg.in{opacity:1;transform:none}
+  .av{flex:0 0 32px;height:32px;border-radius:50%;display:grid;place-items:center;font:600 12px var(--display)}
+  .me .av{background:var(--ink);color:#fff}
+  .ai .av{background:linear-gradient(115deg,var(--blue),var(--violet));color:#fff}
+  .bub{background:#fff;border-radius:6px var(--r-card) var(--r-card) var(--r-card);padding:12px 16px;max-width:100%;min-width:0;font-size:15.5px;color:var(--body);box-shadow:0 1px 0 rgba(11,16,38,.04)}
+  .me .bub{background:var(--ink);color:#e8eaf5;border-radius:var(--r-card) 6px var(--r-card) var(--r-card)}
+  .who2{font:600 12px var(--display);color:var(--mute);margin-bottom:3px;letter-spacing:.02em}
+  .me .who2{color:#9aa0c0}
+  .bub p{margin:0 0 8px}.bub p:last-child{margin-bottom:0}
+  .bub b{color:var(--ink)}.me .bub b{color:#fff}
+  .me .bub a{color:#cdbcff}
+  .bub ul{margin:6px 0;padding-left:18px}
+  .bub code{background:var(--wash);border-radius:6px;padding:1px 6px;font-size:13px;color:var(--ink)}
+  .me .bub code{background:rgba(255,255,255,.12);color:#fff}
+  .note{border-left:3px solid var(--amber);background:rgba(255,178,63,.12);padding:9px 14px;border-radius:0 var(--r-tile) var(--r-tile) 0;margin:10px 0;font-size:14.5px}
+  .good{border-left-color:var(--ok);background:rgba(34,197,94,.1)}
+  .chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .chip{font:500 13px var(--text);color:var(--ink);background:#fff;border:1px solid var(--ink);border-radius:var(--r-pill);padding:5px 14px;cursor:pointer;transition:.2s}
+  .chip:hover{background:var(--ink);color:#fff}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;margin:10px 0;border-radius:var(--r-tile);overflow:hidden}
+  th,td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left}
+  th{background:var(--wash);color:var(--mute);font-weight:600}
+  .quote{font-style:italic;color:var(--ink);border-left:3px solid var(--violet);padding-left:12px;margin:10px 0;font-size:15px}
+  .foot{flex:none;padding:16px 20px;border-top:1px solid var(--line);color:var(--mute);font-size:13px;background:var(--wash)}
+
+  .stage{height:100%;min-height:0}
+  .stage-card{background:var(--space);border-radius:var(--r-panel);overflow:hidden;isolation:isolate;height:100%;display:flex;flex-direction:column;box-shadow:0 30px 60px -30px rgba(61,99,255,.35)}
+  .stage-bar{flex:none;display:flex;align-items:center;gap:8px;padding:12px 18px;background:linear-gradient(115deg,var(--space2),var(--space));flex-wrap:wrap}
+  .stage-bar b{font:600 14px var(--display);margin-right:auto;color:#fff}
+  .stage-bar button,.stage-bar a{font:500 12.5px var(--text);color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:var(--r-pill);padding:5px 14px;cursor:pointer;text-decoration:none;transition:.2s}
+  .stage-bar button:hover,.stage-bar a:hover{background:#fff;color:var(--space)}
+  iframe{display:block;width:100%;flex:1;min-height:0;border:0;background:var(--space)}
+  .tabs{display:none}
+
+  /* page switcher: one tab per AI project */
+  header nav{display:flex;align-items:center;gap:4px}
+  header nav a{margin-left:0}
+  header nav a[aria-current="page"]{background:var(--ink);color:#fff}
+  header nav a[aria-current="page"]:hover{background:var(--ink);color:#fff}
+
+  section.block{padding:72px 0 40px;border-top:1px solid var(--line)}
+  h2{font:600 clamp(2rem,4vw,3.4rem)/1.02 var(--display);letter-spacing:-.045em;margin:14px 0 14px}
+  .sub{color:var(--body);max-width:720px;margin:0 0 30px}
+  .gallery{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+  .ph{position:relative;border-radius:var(--r-card);overflow:hidden;background:var(--wash);margin:0;grid-column:span 4;aspect-ratio:3/4}
+  .ph.wide{grid-column:span 8;aspect-ratio:16/10}
+  .ph img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;transition:transform .6s var(--ease)}
+  .ph:hover img{transform:scale(1.03)}
+  .ph figcaption{position:absolute;left:12px;bottom:12px;padding:5px 14px;font-size:13px;background:rgba(255,255,255,.92);color:var(--ink);border-radius:var(--r-pill);pointer-events:none}
+  .ph.missing{display:grid;place-items:center;text-align:center;color:var(--mute);font-size:14px;padding:20px;
+    background:linear-gradient(135deg,var(--wash),#ebe7f7)}
+  .ph.missing code{background:#fff;border-radius:6px;padding:1px 8px}
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;max-width:920px}
+  .compare .ph{grid-column:auto}
+  .cmp-title{font:600 clamp(1.4rem,2.4vw,1.9rem)/1.1 var(--display);letter-spacing:-.03em;margin:56px 0 10px}
+  .takeaways{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:10px}
+  .card{background:var(--wash);border-radius:var(--r-card);padding:22px}
+  .card h3{margin:0 0 8px;font:600 1.15rem var(--display);letter-spacing:-.02em}.card p{margin:0;color:var(--body);font-size:15px}
+  footer{border-top:1px solid var(--line);padding:30px 0 48px;color:var(--mute);font-size:14px}
+  #lb{position:fixed;inset:0;background:rgba(7,11,28,.92);display:none;place-items:center;z-index:50;cursor:zoom-out}
+  #lb img{max-width:94vw;max-height:92vh;border-radius:var(--r-card)}
+  #lb.on{display:grid}
+
+  @media (max-width:1000px){
+    .split{grid-template-columns:1fr}
+    .tabs{display:flex;gap:8px;margin-bottom:14px}
+    .tabs button{flex:1;font:500 15px var(--text);color:var(--ink);background:#fff;border:1px solid var(--ink);border-radius:var(--r-pill);padding:10px}
+    .tabs button.on{background:var(--ink);color:#fff}
+    body.show-booth .chat{display:none}
+    body:not(.show-booth) .stage{display:none}
+    .split{height:auto;max-height:none;min-height:0}
+    .chat{height:calc(100vh - 210px);min-height:480px}
+    .stage{height:auto}
+    .stage-card{height:auto;display:block}
+    iframe{height:70vh;flex:none}
+    .ph,.ph.wide{grid-column:span 12}
+    .compare{grid-template-columns:1fr}
+    header .who span,header nav .out{display:none}
+    header nav a{font-size:13.5px;padding:6px 12px}
+  }
+  @media (prefers-reduced-motion:reduce){.msg{transition:none;opacity:1;transform:none}html{scroll-behavior:auto}.ph img{transition:none}}
+  .stage-card.light{background:var(--wash);box-shadow:0 30px 60px -30px rgba(61,99,255,.25)}
+  .stage-card.light iframe{background:#fff}
+
+  /* phones: the name gives way so the project tabs fit on one line */
+  @media (max-width:600px){
+    header .who{display:none}
+    header nav{width:100%;justify-content:space-between;gap:2px}
+    header nav a{padding:6px 10px;font-size:13px;white-space:nowrap}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="who">Pinky Gohil <span>· AI projects</span></div>
+    <nav aria-label="AI projects"><a href="/ai-lab/">Booth model</a><a href="/ai-lab/knowledge-base" aria-current="page">Knowledge base</a><a href="/ai-lab/unfold-thread">Unfold Thread</a><a class="out" href="https://pinkygohil.github.io">Portfolio ↗</a></nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Case study · Working with Claude</div>
+    <h1>One library for every case study, and on-brand slides in minutes</h1>
+    <p class="lede">At NeenOpal, managers came to my design team every time they needed a pitch, and each one took about a day. I built an internal knowledge base with Claude: one searchable library for case studies, use cases, playbooks, and content that turns any case study into an on-brand slide. This page shows how it came together, using a demo with invented data.</p>
+    <div class="facts">
+      <span>Internal tool · NeenOpal</span>
+      <span>Demo data · Fernwood Data Co. (fictional)</span>
+      <span>Exports editable PowerPoint</span>
+      <span>Slack-linked content pipeline</span>
+    </div>
+  </div>
+
+  <div class="tabs"><button id="tabChat" class="on">The conversation</button><button id="tabBooth">The demo</button></div>
+
+  <div class="split" id="process">
+    <!-- ======================= CHAT ======================= -->
+    <div class="chat">
+      <div class="chat-head">
+        <div class="dots"><i></i><i></i><i></i></div><b>Knowledge base session</b>
+      </div>
+      <div class="thread" id="thread">
+
+        <div class="step"><b>01</b> The problem</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>Our case studies, use cases, playbooks, and decks are spread across drives, the website, and Slack. Every time a manager needs a pitch, they come to my design team, and it takes about a day. Can we build one place that holds all of it and turns any case study into an on-brand slide?</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>Yes. Before I build anything, three questions: who searches it, how do they search, and what do they need to walk away with?</p></div></div>
+
+        <div class="step"><b>02</b> Who it's for</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>Sales and delivery managers across the company. They look things up by industry or service, and they need a slide they can drop straight into a pitch without asking design.</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>Then the library should be organized around how they ask, not how the files are stored:</p>
+          <table>
+            <tr><th>Layer</th><th>What goes in it</th></tr>
+            <tr><td>Collections</td><td>Case studies, use cases, playbooks, capability decks, brochures, videos, and blogs</td></tr>
+            <tr><td>Filters</td><td>Industry, practice area, work type, and AI approach</td></tr>
+            <tr><td>Search</td><td>Across titles, clients, descriptions, and the tech used</td></tr>
+          </table>
+          <div class="chip-row"><button class="chip" data-act="view:lib">Show the library</button><button class="chip" data-act="search:forecasting">Search "forecasting"</button></div></div></div>
+
+        <div class="step"><b>03</b> Brand rules first</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>The slides have to follow our design style exactly. If they don't, managers will keep coming back to us to fix them.</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>Then the brand system goes in before any layout: palette, type, logo rules, and spacing. I'll build two layouts, <b>Standard</b> and <b>Detailed</b>, from the same fields, so every slide comes out the same way.</p>
+          <div class="note">Every slide is generated from the same structured fields, so there is nothing left for a manager to restyle.</div>
+          <div class="chip-row"><button class="chip" data-act="open:FW-02">Preview a slide</button><button class="chip" data-act="detailed">Switch to Detailed</button></div></div></div>
+
+        <div class="step"><b>04</b> Fixing the first draft</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>Long titles overflow the slide, and some case studies don't have three results to show.</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>I'll size the text to each box by measuring how many lines it needs, so long titles shrink instead of spilling over. Where a case study has fewer than three results, the empty slots show context, such as the industry or platform.</p>
+          <div class="note good">No invented numbers. Slides only show approved figures, each with a source.</div></div></div>
+
+        <div class="step"><b>05</b> Slides people can edit</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>Managers will want to tweak the wording before a meeting.</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>The export builds real PowerPoint text and shapes, not pictures of slides, so everything stays editable. Managers can download one slide or a whole selection as a single deck.</p></div></div>
+
+        <div class="step"><b>06</b> Clients who can't be named</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>Some clients can't be named in a pitch.</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>I've added a switch that replaces client names with a short description, like "A regional property insurer," on every card and slide.</p>
+          <div class="chip-row"><button class="chip" data-act="anon">Hide client names</button></div></div></div>
+
+        <div class="step"><b>07</b> Keeping it current</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>A library goes stale unless new content keeps flowing in. Right now requests come in over Slack and get lost. It should also check our website, LinkedIn, and YouTube so we know what's already out there.</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>Then the library needs a pipeline in front of it:</p>
+          <ul>
+            <li>A request with a short brief</li>
+            <li>An AI draft in house style</li>
+            <li>Review and approval</li>
+            <li>Publish to the website, where it lands in the library with a ready slide</li>
+          </ul>
+          <p>Every step posts to a Slack channel, so nothing gets lost in a thread.</p>
+          <div class="chip-row"><button class="chip" data-act="view:pipe">Show the pipeline</button></div></div></div>
+
+        <div class="step"><b>08</b> Videos from the same material</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>Can it also make a short demo video from the same material?</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>Yes. Any request can be flagged for a demo video, which is built from the approved content using the video template, so it matches the slides.</p></div></div>
+
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>Rolling it out to the managers. <a href="#changed">See what changed →</a></p></div></div>
+
+      </div>
+      <div class="foot">The conversation is condensed and simplified from my working sessions. The demo runs on an invented company, Fernwood Data Co. NeenOpal's real knowledge base and its content are internal.</div>
+    </div>
+
+    <!-- ======================= DEMO ======================= -->
+    <div class="stage" id="demo-live">
+      <div class="stage-card">
+        <div class="stage-bar">
+          <b>The demo, live</b>
+          <button data-act="view:lib">Library</button>
+          <button data-act="view:pipe">Content pipeline</button>
+          <button id="fs" type="button">Full screen ⛶</button>
+        </div>
+        <iframe id="booth" src="kb-demo.html" title="Interactive demo of the knowledge base, with fictional data" loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="block" id="changed">
+  <div class="wrap">
+    <div class="eyebrow">Key takeaways</div>
+    <h2>What it changed</h2>
+    <p class="sub">The knowledge base is used across NeenOpal. It took the design team out of routine pitch requests, without lowering the standard of what goes out.</p>
+    <div class="takeaways">
+      <div class="card"><h3>Pitches in minutes, not a day</h3><p>A pitch that used to take about a day now takes minutes. Managers find the right case study and export the slide themselves.</p></div>
+      <div class="card"><h3>No back and forth with design</h3><p>Every slide follows NeenOpal's design style, so managers no longer send pitches back to my team to fix.</p></div>
+      <div class="card"><h3>One place for everything</h3><p>Case studies, use cases, playbooks, and content across industries and services now live in one library anyone in the company can search.</p></div>
+      <div class="card"><h3>Videos from the same material</h3><p>The same content can become a short demo video, so slides and videos always tell the same story.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer><div class="wrap">Pinky Gohil · Associate Principal of Design, NeenOpal · <a href="https://pinkygohil.github.io">pinkygohil.work</a></div></footer>
+
+<script>
+/* reveal chat messages as they scroll in */
+(function(){
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+  }), {threshold:.12});
+  document.querySelectorAll('.msg').forEach(m => io.observe(m));
+})();
+
+/* drive the embedded demo from chat chips (same-origin only) */
+const frame = document.getElementById('booth');
+function demoDo(act){
+  if (!document.body.classList.contains('show-booth') && matchMedia('(max-width:1000px)').matches){
+    document.body.classList.add('show-booth');
+    document.getElementById('tabBooth').classList.add('on'); document.getElementById('tabChat').classList.remove('on');
+  }
+  try{
+    const w = frame.contentWindow, d = frame.contentDocument;
+    const lib = () => d.getElementById('vLib').click();
+    if (act === 'view:pipe') d.getElementById('vPipe').click();
+    else if (act === 'view:lib') lib();
+    else if (act.startsWith('open:')){ lib(); w.location.hash = act.slice(5); }
+    else if (act.startsWith('search:')){ lib(); const q = d.getElementById('q'); q.value = act.slice(7); q.dispatchEvent(new w.Event('input', {bubbles:true})); }
+    else if (act === 'detailed'){ lib(); const s = d.getElementById('ver'); s.value = 'det'; s.dispatchEvent(new w.Event('change', {bubbles:true})); }
+    else if (act === 'anon'){ lib(); const c = d.getElementById('anon'); if (!c.checked) c.click(); }
+  }catch(e){ /* not loaded yet: ignore */ }
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]'); if (t) demoDo(t.dataset.act);
+});
+
+/* full screen: native fullscreen on the iframe, new tab as fallback */
+document.getElementById('fs').addEventListener('click', () => {
+  const f = document.getElementById('booth');
+  const go = f.requestFullscreen || f.webkitRequestFullscreen;
+  if (go) { try { const p = go.call(f); if (p && p.catch) p.catch(() => window.open('kb-demo.html','_blank','noopener')); return; } catch(e){} }
+  window.open('kb-demo.html','_blank','noopener');
+});
+
+/* mobile tabs */
+document.getElementById('tabChat').onclick = () => {
+  document.body.classList.remove('show-booth');
+  tabChat.classList.add('on'); tabBooth.classList.remove('on');
+};
+document.getElementById('tabBooth').onclick = () => {
+  document.body.classList.add('show-booth');
+  tabBooth.classList.add('on'); tabChat.classList.remove('on');
+};
+</script>
+</body>
+</html>

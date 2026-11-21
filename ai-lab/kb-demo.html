@@ -1,0 +1,836 @@
+<!doctype html><html><head><meta name="robots" content="noindex"><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Fernwood Knowledge Base</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"></script>
+<style>
+:root{
+  --bg:#FFFFFF; --surface:#FFFFFF; --wash:#F2F2EF; --wash2:#E9E9E5; --ink:#0B1026; --body:#3A3E52; --muted:#5F6375; --line:#E3E3DF;
+  --accent:#3552F0; --violet:#7340E6; --amber:#FFB23F; --tint:#EEF0FF; --prim:#0B1026; --prim-ink:#FFFFFF; --focus:#3D63FF;
+  --grad:linear-gradient(115deg,#3D63FF 0%,#A26BFF 52%,#FFB23F 100%);
+  --display:'Geist',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --sans:'Instrument Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --panel:clamp(24px,3vw,40px); --ease:cubic-bezier(.22,1,.36,1);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#070B1C; --surface:#0F1535; --wash:#121A42; --wash2:#1A2354; --ink:#EEF0FF; --body:#C4C8DC; --muted:#9AA0BD; --line:#252C5A;
+    --accent:#8DA2FF; --tint:#1A2255; --prim:#FFFFFF; --prim-ink:#0B1026; --focus:#8DA2FF; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#070B1C; --surface:#0F1535; --wash:#121A42; --wash2:#1A2354; --ink:#EEF0FF; --body:#C4C8DC; --muted:#9AA0BD; --line:#252C5A;
+  --accent:#8DA2FF; --tint:#1A2255; --prim:#FFFFFF; --prim-ink:#0B1026; --focus:#8DA2FF; color-scheme:dark;
+}
+*{box-sizing:border-box}
+::selection{background:rgba(124,92,255,.24)}
+body{margin:0;background:var(--bg);color:var(--body);font-family:var(--sans);font-size:15px;line-height:1.6;
+  padding-block:16px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1280px;margin:0 auto}
+h1,h2,h3{font-family:var(--display);font-weight:600;color:var(--ink);letter-spacing:-.035em}
+.hero{position:relative;isolation:isolate;overflow:hidden;background:#070B1C;color:#fff;border-radius:var(--panel);padding:clamp(28px,5vw,56px);margin-bottom:20px}
+.hero::before{content:"";position:absolute;inset:0;z-index:-1;opacity:.8;background-image:
+  radial-gradient(1.2px 1.2px at 8% 22%,#fff 50%,transparent 52%),radial-gradient(1px 1px at 17% 68%,#fff 50%,transparent 52%),
+  radial-gradient(1.4px 1.4px at 31% 14%,#fff 50%,transparent 52%),radial-gradient(1px 1px at 42% 80%,#fff 50%,transparent 52%),
+  radial-gradient(1.2px 1.2px at 55% 30%,#fff 50%,transparent 52%),radial-gradient(1px 1px at 63% 62%,#fff 50%,transparent 52%),
+  radial-gradient(1.4px 1.4px at 74% 16%,#fff 50%,transparent 52%),radial-gradient(1px 1px at 86% 74%,#fff 50%,transparent 52%),
+  radial-gradient(1.2px 1.2px at 93% 38%,#fff 50%,transparent 52%),radial-gradient(1px 1px at 24% 44%,#fff 50%,transparent 52%)}
+.hero::after{content:"";position:absolute;z-index:-1;right:-12%;top:-45%;width:62%;height:150%;
+  background:radial-gradient(closest-side,rgba(162,107,255,.55),rgba(61,99,255,.28) 55%,transparent 78%);filter:blur(36px)}
+.eyebrow{margin:0 0 14px;font-size:12px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.66)}
+.hero h1{color:#fff;margin:0 0 14px;font-size:clamp(38px,6.4vw,68px);line-height:1.02;text-wrap:balance}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{margin:0;max-width:60ch;font-size:clamp(16px,1.6vw,19px);line-height:1.45;color:rgba(255,255,255,.76)}
+.notice{display:inline-block;margin-top:18px;font-size:12px;font-weight:600;letter-spacing:.04em;color:rgba(255,255,255,.86);border:1px solid rgba(255,255,255,.28);border-radius:999px;padding:5px 12px;background:rgba(255,255,255,.06)}
+.stats{display:flex;flex-wrap:wrap;gap:10px 40px;margin:28px 0 0;padding:0;list-style:none}
+.stats li{display:flex;flex-direction:column}
+.stats b{font-family:var(--display);font-weight:600;font-size:clamp(26px,3.4vw,38px);line-height:1.05;letter-spacing:-.035em;font-variant-numeric:tabular-nums;color:#fff}
+.stats span{font-size:13px;color:rgba(255,255,255,.62)}
+.bar{display:flex;flex-wrap:wrap;gap:12px 16px;align-items:flex-end;margin-bottom:22px;padding:16px;background:var(--wash);border-radius:var(--panel)}
+.bar .grow{flex:1 1 260px;min-width:0}
+input[type=search],select{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:9px 16px;min-height:42px}
+select{padding-right:10px}
+input[type=search]{width:100%}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--muted)}
+label.chk{display:flex;gap:8px;align-items:center;font-size:14px;cursor:pointer;min-height:42px;color:var(--body)}
+input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px}
+button{font:inherit;font-weight:500;cursor:pointer;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 18px;min-height:42px;transition:background .25s var(--ease),color .25s var(--ease),border-color .25s var(--ease),transform .25s var(--ease)}
+button:hover{border-color:var(--ink)}
+button.primary{background:var(--prim);color:var(--prim-ink);border-color:var(--prim);font-weight:600}
+button.primary:not(:disabled):hover{background:var(--grad);color:#0B1026;border-color:transparent}
+button:disabled{opacity:.45;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.main{display:grid;grid-template-columns:250px minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:860px){.main{grid-template-columns:minmax(0,1fr)}}
+aside.rail{display:flex;flex-direction:column;gap:22px}
+fieldset{border:0;margin:0;padding:0;min-width:0}
+legend{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:0;margin-bottom:8px}
+.opt{display:flex;gap:8px;align-items:center;justify-content:space-between;padding:3px 0;font-size:14px}
+.opt label{display:flex;gap:8px;align-items:center;cursor:pointer;min-width:0}
+.opt .n{font-variant-numeric:tabular-nums;color:var(--muted);font-size:12.5px}
+.opt.zero{opacity:.42}
+.colls{display:flex;flex-direction:column;gap:2px}
+.colls button{display:flex;justify-content:space-between;align-items:center;text-align:left;border:0;background:transparent;border-radius:999px;padding:8px 14px;min-height:0;font-size:14.5px}
+.colls button:hover{background:var(--wash)}
+.colls button[aria-pressed=true]{background:var(--prim);color:var(--prim-ink);font-weight:600}
+.colls .n{font-variant-numeric:tabular-nums;font-size:12.5px;opacity:.75}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.chip{background:var(--tint);border:0;border-radius:999px;padding:4px 12px;font-size:13px;min-height:0;display:inline-flex;gap:6px;align-items:center;color:var(--accent)}
+.group h2{font-size:clamp(20px,2.4vw,26px);line-height:1.15;margin:34px 0 14px}
+.group h2 small{font-family:var(--sans);font-weight:500;font-size:14px;letter-spacing:0;color:var(--muted);margin-left:6px}
+.group:first-child h2{margin-top:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:16px}
+.grid.txt{grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.card{background:var(--wash);border-radius:20px;padding:12px;display:flex;flex-direction:column;gap:10px;min-width:0;border:1px solid transparent}
+.card.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.card.tx{padding:18px;gap:8px;cursor:pointer;text-align:left;transition:transform .35s var(--ease),border-color .25s var(--ease)}
+.card.tx:hover{transform:translateY(-2px);border-color:var(--line);background:var(--surface);box-shadow:0 0 0 1px var(--line)}
+.pill{align-self:flex-start;font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--violet);background:var(--tint);border-radius:999px;padding:2px 10px}
+:root[data-theme="dark"] .pill{color:#C2A8FF}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .pill{color:#C2A8FF}}
+.card .t{font-family:var(--display);font-weight:600;color:var(--ink);font-size:16.5px;line-height:1.2;letter-spacing:-.02em;text-wrap:balance}
+.card .s{font-size:13px;color:var(--muted);line-height:1.45}
+.card .d{font-size:13.5px;color:var(--body);line-height:1.5;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.card.cs .t{font-size:15.5px;padding:0 4px}
+.card.cs .s{padding:0 4px}
+.card.cs label.chk{padding:0 4px 4px;min-height:0;font-size:13px}
+.thumb{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;border:1px solid var(--line);border-radius:14px;background:#fff;cursor:pointer;padding:0;display:block;transition:transform .35s var(--ease)}
+.card .thumb:hover{transform:scale(1.015)}
+.sl{position:absolute;left:0;top:0;width:960px;height:540px;transform-origin:0 0;font-family:'Instrument Sans',system-ui,sans-serif;overflow:hidden;text-align:left}
+.sl>div{position:absolute;overflow:hidden}
+.sl p{margin:0}
+.badge{font-family:var(--sans);font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#0B1026;background:var(--amber);border-radius:999px;padding:1px 8px;margin-left:8px;vertical-align:2px}
+.empty{padding:48px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:var(--panel)}
+.more{margin-top:14px}
+#status{min-height:20px;font-size:14px;color:var(--muted);margin-top:12px}
+.modal{position:fixed;inset:0;background:rgba(7,11,28,.78);display:flex;align-items:flex-start;justify-content:center;overflow:auto;z-index:50;
+  padding-block:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.modal[hidden]{display:none}
+.sheet{background:var(--surface);color:var(--body);border-radius:var(--panel);width:100%;max-width:1000px;padding:clamp(14px,2.4vw,24px);display:flex;flex-direction:column;gap:16px;margin:auto}
+.sheet .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.tabs{display:flex;gap:4px;background:var(--wash);border-radius:999px;padding:4px}
+.tabs button{border:0;background:transparent;min-height:34px;padding:5px 16px}
+.tabs button[aria-pressed=true]{background:var(--prim);color:var(--prim-ink)}
+.sheet .thumb{cursor:default;border-radius:20px}
+.detail h3{margin:0 0 8px;font-size:clamp(22px,3vw,30px);line-height:1.1;text-wrap:balance}
+.detail dl{display:grid;grid-template-columns:max-content 1fr;gap:6px 20px;margin:14px 0 0;font-size:14px}
+.detail dt{color:var(--muted)}
+.detail dd{margin:0;color:var(--ink)}
+.detail p{margin:6px 0;max-width:70ch}
+@media (max-width:560px){.hero{border-radius:24px}.bar{border-radius:24px}}
+
+.views{display:inline-flex;gap:4px;background:var(--wash);border-radius:999px;padding:4px;margin-bottom:18px}
+.views button{border:0;background:transparent;min-height:38px;padding:6px 20px}
+.views button[aria-pressed=true]{background:var(--prim);color:var(--prim-ink);font-weight:600}
+.flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 20px;padding:0;list-style:none}
+.flow li{display:flex;align-items:center;gap:8px;background:var(--wash);border-radius:999px;padding:7px 8px 7px 14px;font-size:13.5px;color:var(--ink);font-weight:500}
+.flow li b{font-family:var(--display);font-size:12.5px;background:var(--surface);border-radius:999px;padding:1px 9px;color:var(--accent)}
+.flow li.arr{background:none;padding:0;color:var(--muted)}
+.pipe{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;align-items:start}
+@media (max-width:1100px){.pipe{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.pipe{grid-template-columns:minmax(0,1fr)}}
+.col{background:var(--wash);border-radius:24px;padding:12px;display:flex;flex-direction:column;gap:10px;min-height:120px}
+.col h3{margin:2px 6px 2px;font-size:15px;display:flex;justify-content:space-between;align-items:center;letter-spacing:-.02em}
+.col h3 span{font-family:var(--sans);font-weight:500;font-size:13px;color:var(--muted)}
+.tk{background:var(--surface);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px;border:1px solid var(--line)}
+.tk .id{font-size:12px;font-weight:600;color:var(--muted);display:flex;justify-content:space-between;align-items:center;gap:6px}
+.tk .tt{font-family:var(--display);font-weight:600;color:var(--ink);font-size:14.5px;line-height:1.25;letter-spacing:-.015em}
+.tk .meta{display:flex;flex-wrap:wrap;gap:5px}
+.tag{font-size:11.5px;font-weight:500;border-radius:999px;padding:1px 9px;background:var(--tint);color:var(--accent)}
+.tag.ok{background:#E3F6EA;color:#14693A}.tag.hi{background:#FFE9C7;color:#8A5300}.tag.vd{background:#F0E7FF;color:#5B2FC4}
+:root[data-theme="dark"] .tag.ok{background:#12301F;color:#7FDCA3}:root[data-theme="dark"] .tag.hi{background:#3A2A0C;color:#FFC769}:root[data-theme="dark"] .tag.vd{background:#2A1F55;color:#C2A8FF}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .tag.ok{background:#12301F;color:#7FDCA3}:root:not([data-theme="light"]) .tag.hi{background:#3A2A0C;color:#FFC769}:root:not([data-theme="light"]) .tag.vd{background:#2A1F55;color:#C2A8FF}}
+.tk .who{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
+.av{width:24px;height:24px;border-radius:50%;background:var(--grad);color:#0B1026;font-size:10.5px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.tk .act{display:flex;gap:6px;flex-wrap:wrap}
+.tk .act button{min-height:32px;padding:4px 12px;font-size:13px}
+.tk .url{font-size:12px;color:var(--accent);word-break:break-all}
+.pgrid{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;margin-top:24px;align-items:start}
+@media (max-width:860px){.pgrid{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--wash);border-radius:var(--panel);padding:clamp(16px,2.4vw,24px)}
+.panel h3{margin:0 0 12px;font-size:20px}
+.feed{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;max-height:420px;overflow:auto}
+.feed li{display:flex;gap:10px;font-size:13.5px;line-height:1.45;color:var(--body)}
+.feed time{font-size:12px;color:var(--muted);white-space:nowrap;min-width:44px;padding-top:1px}
+.feed b{color:var(--ink);font-weight:600}
+.chan{display:inline-block;font-size:12px;font-weight:600;color:var(--accent);background:var(--tint);border-radius:999px;padding:1px 10px;margin-bottom:10px}
+.pform{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+.pform .wide{grid-column:1/-1}
+textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:10px 14px;min-height:84px;width:100%;resize:vertical}
+.pform input[type=text]{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:9px 16px;min-height:42px;width:100%}
+.rules{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:13.5px}
+.rules li::before{content:"\2713\00a0\00a0";color:var(--accent);font-weight:700}
+</style>
+
+
+<div class="wrap">
+  <header class="hero">
+    <p class="eyebrow">Fernwood Data Co. &middot; Demo</p>
+    <h1>Knowledge <span class="grad">base</span></h1>
+    <p class="sub">One searchable library for case studies, use cases, playbooks and content, fed by a request-to-website pipeline. Any case study turns into a branded one-page slide you can export to PowerPoint.</p>
+    <span class="notice">Fictional demo. Every company, client and number is invented.</span>
+    <ul class="stats" id="stats"></ul>
+  </header>
+
+  <nav class="views" aria-label="View"><button type="button" id="vLib" aria-pressed="true">Library</button><button type="button" id="vPipe" aria-pressed="false">Content pipeline</button></nav>
+  <div id="viewLib">
+  <div class="bar">
+    <div class="grow"><label class="f" for="q">Search<input id="q" type="search" placeholder="Try: forecasting, migration, dashboard, search" autocomplete="off"></label></div>
+    <label class="f" for="group">Group by
+      <select id="group"><option value="type">Collection</option><option value="industry">Industry</option><option value="platform">Practice area</option><option value="none">None</option></select></label>
+    <label class="f" for="ver">Slide version
+      <select id="ver"><option value="std">Standard</option><option value="det">Detailed</option><option value="both">Both</option></select></label>
+    <label class="f" for="theme">Slide theme
+      <select id="theme"><option value="A">Night sky</option><option value="B">Violet and amber</option></select></label>
+    <label class="chk" for="anon"><input type="checkbox" id="anon"> Hide client names on slides</label>
+  </div>
+
+  <div class="main">
+    <aside class="rail" id="rail" aria-label="Collections and filters"></aside>
+    <section aria-label="Results">
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div id="count" style="color:var(--muted)"></div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          <button id="selall" type="button">Select all slides shown</button>
+          <button id="clearsel" type="button">Clear selection</button>
+          <button id="export" type="button" class="primary">Download PowerPoint</button>
+        </div>
+      </div>
+      <div class="chips" id="chips"></div>
+      <div id="results"></div>
+      <div id="status" role="status" aria-live="polite"></div>
+    </section>
+  </div>
+  </div>
+  <div id="viewPipe" hidden>
+    <ol class="flow" id="flow" aria-label="Pipeline steps"></ol>
+    <div class="pipe" id="board"></div>
+    <div class="pgrid">
+      <div class="panel">
+        <h3>New content request</h3>
+        <form id="reqForm" class="pform">
+          <label class="f wide" for="rTitle">Title<input type="text" id="rTitle" required placeholder="What should we publish?"></label>
+          <label class="f" for="rType">Collection<select id="rType"><option value="case_study">Case study</option><option value="use_case">Use case</option><option value="playbook">Playbook</option><option value="blog">Blog</option></select></label>
+          <label class="f" for="rInd">Industry<select id="rInd"></select></label>
+          <label class="f wide" for="rBrief">Brief<textarea id="rBrief" required placeholder="Two or three sentences: the situation, what was built, the result."></textarea></label>
+          <label class="chk wide" for="rVid"><input type="checkbox" id="rVid"> Also make a short demo video from the material</label>
+          <div class="wide"><button type="submit" class="primary">Send request</button></div>
+        </form>
+      </div>
+      <div class="panel">
+        <span class="chan"># content-pipeline</span>
+        <h3>Activity</h3>
+        <ul class="feed" id="feed" aria-live="polite"></ul>
+        <h3 style="margin-top:20px;font-size:16px">Applied to every draft</h3>
+        <ul class="rules"><li>Brand colors, type and logo rules</li><li>Approved figures only, each with a source</li><li>Tone and spelling guide</li><li>Slide layout and demo video template</li></ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-label="Entry preview">
+  <div class="sheet">
+    <div class="row">
+      <div class="tabs" role="group" aria-label="Slide layout" id="tabs">
+        <button type="button" id="tabStd" aria-pressed="true">Standard</button>
+        <button type="button" id="tabDet" aria-pressed="false">Detailed</button>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button type="button" id="mSel"></button>
+        <button type="button" id="mDl" class="primary">Download this slide</button>
+        <button type="button" id="mClose">Close</button>
+      </div>
+    </div>
+    <div class="thumb" id="mThumb"></div>
+    <div class="detail" id="mMeta"></div>
+  </div>
+</div>
+
+<script>
+/* ---------- Data: all entries are invented for this demo ---------- */
+/* All entries below are invented for this demo. Fernwood Data Co. and every client are fictional. */
+const CS=(id,client,named,desc,industry,platform,work,title,problem,built,cpts,spts,metrics,tech)=>({id,type:'case_study',client:named?client:'',named,descriptor:desc,industry,platform,work,title,problem,built,cpts,spts,metrics,tech,desc:(problem+' '+built).replace(/\*\*/g,''),featured:true});
+const E=(id,type,title,industry,platform,desc,x)=>Object.assign({id,type,title,industry,platform,desc},x||{});
+const DATA=[
+CS('FW-01','Alder & Finch',true,'A regional property insurer','Financial services','Data foundations',['Data engineering','Reporting'],
+ 'Claims reporting in minutes, not days',
+ 'Claims data sat in four systems, so monthly reporting took analysts several days of manual stitching.',
+ 'A **unified claims warehouse** with automated nightly loads and a **self-service dashboard** for adjusters and finance.',
+ ['Four source systems with no shared claim ID','Month-end reports built by hand in spreadsheets','No single view of open claim exposure'],
+ ['Unified claims model across four systems','Automated nightly loads with quality checks','Self-service dashboard for adjusters','Role-based views for finance and leadership'],
+ [['20 min','Monthly claims report, down from 4 days'],['4 to 1','Source systems consolidated'],['60+','Weekly dashboard users']],
+ ['Warehouse','Orchestration','Dashboards','Data quality']),
+CS('FW-02','Brightmoor Health',true,'A nine-clinic outpatient group','Healthcare','Dashboards and reporting',['Reporting'],
+ 'One patient-flow view across nine clinics',
+ 'Each clinic tracked waiting times differently, so leaders could not see where patients were stuck.',
+ 'A **shared patient-flow dashboard** with one definition of wait time, refreshed every morning for every clinic.',
+ ['Nine clinics, nine ways of measuring waits','Reports arrived a month late','No way to compare clinics fairly'],
+ ['One agreed definition of wait time','Daily refresh for every clinic','Drill-down from group to clinic to hour','Alerts when waits pass target'],
+ [['23%','Shorter average patient wait'],['9','Clinics on one dashboard'],['Daily','Refresh, previously monthly']],
+ ['Dashboards','Scheduled refresh','Alerts','Row-level security']),
+CS('FW-03','Cobalt Freight',true,'A national freight forwarder','Logistics','Data foundations',['Data engineering','Migration'],
+ 'Moved a 12 TB data estate with no downtime',
+ 'Aging on-premise servers were slow and costly, and shipment reports failed during peak season.',
+ 'A **phased migration** to a cloud lakehouse, with both systems running in parallel until every report matched.',
+ ['Servers near end of life','Reports failing in peak season','Rising hardware and support costs'],
+ ['Phased migration by business area','Parallel run with automated report matching','Lakehouse tables for shipments and tracking','Cost monitoring from day one'],
+ [['0 hrs','Unplanned downtime during cutover'],['12 TB','Data migrated'],['35%','Lower yearly infrastructure cost']],
+ ['Lakehouse','Migration tooling','Orchestration','Cost monitoring']),
+CS('FW-04','Dunmore Retail',true,'A 140-store home goods retailer','Retail','Applied AI',['Forecasting','Data engineering'],
+ 'Demand forecasts that cut stock-outs',
+ 'Store managers ordered from experience alone, which left popular items empty and slow items piling up.',
+ 'A **weekly demand forecast** for every store and product, delivered inside the ordering tool managers already use.',
+ ['Stock-outs on popular items','Overstock on slow sellers','Forecasts built by hand each season'],
+ ['Forecast model per product family','Holiday and local event signals','Weekly refresh into the ordering tool','Accuracy tracking by store'],
+ [['28%','Fewer stock-outs across stores'],['140','Stores forecast every week'],['6 pts','Higher forecast accuracy']],
+ ['Forecasting','Feature store','Orchestration','Monitoring']),
+CS('FW-05','Elmwood Credit',true,'A member-owned credit union','Financial services','Process automation',['Reporting','Automation'],
+ 'Board reporting that updates itself',
+ 'Preparing the monthly board pack took the finance team two days of copying numbers between files.',
+ 'A **single KPI dashboard** and an auto-built board pack, with every metric defined once and signed off.',
+ ['Two days of manual prep each month','Different teams, different numbers','Late changes caused version confusion'],
+ ['30 KPIs defined once and signed off','Board pack generated from live data','Commentary added in the dashboard','Full history for audit'],
+ [['1 click','Board pack refresh'],['12 hrs','Saved each month'],['30','KPIs standardized']],
+ ['Dashboards','Semantic layer','Scheduling','Export']),
+CS('FW-06','Fathom Energy',true,'A regional electricity supplier','Energy','Data foundations',['Data engineering'],
+ 'Streaming meter data for 400,000 homes',
+ 'Meter readings arrived a day late, so billing disputes and outage checks started from stale data.',
+ 'A **streaming pipeline** that lands readings in minutes and checks them before billing teams see them.',
+ ['Readings arrived next day','Billing disputes took weeks','No early warning for faulty meters'],
+ ['Streaming ingestion from meters','Automatic checks for gaps and spikes','Lakehouse tables ready for billing','Alerts for faulty meters'],
+ [['400K','Meters streaming'],['5 min','Data delay, down from a day'],['99.9%','Pipeline uptime']],
+ ['Streaming','Lakehouse','Data quality','Alerts']),
+CS('FW-07','Granite Peak Foods',true,'A three-plant food manufacturer','Manufacturing','Dashboards and reporting',['Reporting','Migration'],
+ 'Plant performance on one screen',
+ 'Each plant reported yield and downtime in its own format, so comparing plants meant weeks of cleanup.',
+ 'A **cloud data platform** that brings plant data together, with one dashboard for yield, downtime and waste.',
+ ['Three plants, three formats','Comparisons took weeks','Waste found too late to act on'],
+ ['Common data model across plants','Daily yield, downtime and waste views','Shift-level drill-down','Targets set per plant'],
+ [['3','Plants on one dashboard'],['2 wks to 1 day','Time to compare plants'],['11%','Less recorded waste']],
+ ['Warehouse','Dashboards','Orchestration','Row-level security']),
+CS('FW-08','Harbor Lane Hotels',true,'A 22-property boutique hotel group','Food and hospitality','Dashboards and reporting',['Reporting','Web analytics'],
+ 'Direct bookings tracked end to end',
+ 'The group could not tell which campaigns led to direct bookings, so marketing spend followed guesswork.',
+ '**Clean web tracking** from first visit to booking, with a campaign dashboard the marketing team checks daily.',
+ ['Campaign results could not be tied to bookings','Tracking set up differently per property','Spend decided on gut feel'],
+ ['One tracking plan for all 22 properties','Booking events tied to campaigns','Campaign dashboard with spend and revenue','Monthly review pack for owners'],
+ [['18%','More direct bookings'],['22','Properties on one tracking plan'],['1 day','Campaign report, down from 2 weeks']],
+ ['Tag management','Web analytics','Dashboards','Data quality']),
+CS('FW-09','Ironleaf Pharma',true,'A specialty pharmaceutical company','Healthcare','Applied AI',['Search','Language models'],
+ 'Regulatory answers found in seconds',
+ 'Regulatory staff spent hours searching thousands of documents to answer a single question from an authority.',
+ 'A **search assistant** that answers from approved documents only, and shows the source for every answer.',
+ ['Thousands of documents across folders','Hours to answer one question','Risk of quoting outdated versions'],
+ ['Index of approved documents only','Answers always cite the source page','Version checks before an answer is shown','Access limited by team'],
+ [['70%','Faster document lookup'],['6,000','Documents searchable'],['100%','Answers with a cited source']],
+ ['Search index','Language model','Access control','Audit log']),
+CS('FW-10','Juniper Learning',true,'A network of 50 charter schools','Education','Data foundations',['Data engineering','Reporting'],
+ 'A student outcomes view for 50 schools',
+ 'Attendance, grades and surveys lived in separate tools, so support teams found struggling students late.',
+ 'A **student outcomes platform** that joins the three sources and flags students who may need support.',
+ ['Data in three separate tools','Support teams reacted late','Principals built their own reports'],
+ ['Joined attendance, grades and surveys','Early support flags for each student','Principal and district views','Privacy controls by role'],
+ [['50','Schools on one platform'],['3','Sources joined'],['4 wks','Earlier support for flagged students']],
+ ['Warehouse','Dashboards','Orchestration','Row-level security']),
+CS('FW-11','',false,'A national grocery chain','Retail','Applied AI',['Computer vision'],
+ 'Shelf gaps spotted before shoppers notice',
+ 'Empty shelves were found on store walks, so popular items stayed out of stock for hours.',
+ 'A **shelf-gap alert** that reads store camera snapshots and sends restock tasks to staff phones.',
+ ['Gaps found only on walks','Lost sales on popular items','No record of how long gaps lasted'],
+ ['Image model trained on shelf photos','Restock tasks sent to staff phones','Gap duration tracked per aisle','Weekly store scorecards'],
+ [['40%','Shorter time to restock'],['120','Stores in rollout'],['Hourly','Shelf checks']],
+ ['Image model','Mobile alerts','Dashboards','Monitoring']),
+CS('FW-12','',false,'A specialty lender','Financial services','Applied AI',['Data engineering','Risk models'],
+ 'Fraud signals in near real time',
+ 'Fraud checks ran overnight, so suspicious applications were often approved before anyone looked.',
+ 'A **near real-time pipeline** that scores each application as it arrives and routes risky ones to review.',
+ ['Overnight batch checks','Suspicious applications slipped through','Reviewers lacked context'],
+ ['Streaming ingestion of applications','Risk score on arrival','Review queue with reasons','Feedback loop from reviewer decisions'],
+ [['Seconds','Time to risk score, down from overnight'],['25%','Fewer approved fraud cases'],['2x','Reviewer cases per day']],
+ ['Streaming','Lakehouse','Risk model','Case queue']),
+CS('FW-13','',false,'A regional hospital network','Healthcare','Data foundations',['Migration','Data engineering'],
+ 'Eleven hospital systems, one trusted source',
+ 'Eleven hospitals each kept their own data, so network-wide reports were rebuilt by hand every quarter.',
+ 'A **secure cloud data platform** with shared definitions, so network reports come from one place.',
+ ['Eleven separate data stores','Quarterly reports rebuilt by hand','Strict privacy requirements'],
+ ['Secure landing zone for each hospital','Shared definitions for key measures','Automated quarterly reporting','Full access logging'],
+ [['11','Hospitals connected'],['5 days','Quarterly report time, down from 6 weeks'],['0','Privacy incidents']],
+ ['Warehouse','Encryption','Orchestration','Audit log']),
+CS('FW-14','',false,'A global packaging manufacturer','Manufacturing','Dashboards and reporting',['Reporting','Data engineering'],
+ 'Line efficiency visible by the hour',
+ 'Supervisors learned about line stoppages the next morning, after the shift was already over.',
+ 'An **hourly efficiency dashboard** for every production line, with stoppage reasons captured at the line.',
+ ['Stoppages seen the next day','Reasons recorded on paper','No line-to-line comparison'],
+ ['Sensor data joined with shift plans','Stoppage reasons captured on tablets','Hourly line efficiency view','Weekly improvement review pack'],
+ [['9%','Higher line efficiency'],['Hourly','View, previously next day'],['14','Lines connected']],
+ ['Sensor ingestion','Dashboards','Tablet capture','Alerts']),
+CS('FW-15','Orchard Row Markets',true,'A 60-store neighborhood grocer','Retail','Process automation',['Forecasting','Automation'],
+ 'Weekly staffing plans in one hour',
+ 'Store managers built staffing plans from last year’s spreadsheets, so busy hours ran short and slow hours ran long.',
+ 'A **staffing planner** that forecasts foot traffic by hour and proposes a draft schedule managers can adjust.',
+ ['Plans built from last year’s spreadsheets','Short-staffed at peak, idle off peak','Each manager used a different method'],
+ ['Hourly foot-traffic forecast per store','Draft schedule within labor rules','One-click adjustments for managers','Weekly accuracy review'],
+ [['1 hr','Weekly plan time, down from 6'],['14%','Less overtime spend'],['60','Stores using the planner']],
+ ['Forecasting','Scheduler','Dashboards','Alerts']),
+CS('FW-16','Tidewater Ferries',true,'A coastal ferry operator','Logistics','Data foundations',['Data engineering','Search'],
+ 'Maintenance records you can search',
+ 'Repair notes lived in paper logs and scattered files, so recurring faults went unnoticed across vessels.',
+ 'A **shared maintenance record** digitized from the logs, with fault tags and a view of repeat issues per vessel.',
+ ['Repair notes on paper and in loose files','Repeat faults went unnoticed','No history when a vessel changed crews'],
+ ['Logs digitized and tagged by fault type','One searchable record per vessel','Repeat-fault view across the fleet','Crew handoff summary for each vessel'],
+ [['9','Vessels on one record'],['31%','Fewer repeat faults'],['2 days','Fault history lookup, down from weeks']],
+ ['Document capture','Warehouse','Search index','Dashboards']),
+CS('FW-17','',false,'A regional public library system','Public sector','Applied AI',['Forecasting'],
+ 'The right books at the right branch',
+ 'Popular titles piled up at some branches while others kept long waiting lists.',
+ 'A **demand model** that moves copies between branches before waiting lists build up.',
+ ['Long waits for popular titles','Idle copies at quiet branches','Transfers decided by phone calls'],
+ ['Demand forecast per title and branch','Weekly transfer plan for the courier','Waiting list alerts for staff','Reports for the library board'],
+ [['35%','Shorter wait for holds'],['28','Branches in the network'],['Weekly','Transfer plan, previously ad hoc']],
+ ['Forecasting','Scheduler','Dashboards','Alerts']),
+CS('FW-18','',false,'An online language school','Education','Applied AI',['Recommendations'],
+ 'Practice sets that adapt to each learner',
+ 'Every learner saw the same lesson order, so many stalled at the same hard unit.',
+ 'An **adaptive practice engine** that picks the next exercise from what a learner got wrong.',
+ ['Same lesson order for everyone','Learners stalled at hard units','Authors had no signal on weak exercises'],
+ ['Exercise tagged by skill and difficulty','Next-exercise picker per learner','Author view of weak exercises','Weekly progress email'],
+ [['17%','More learners finishing a unit'],['3x','Faster new-exercise setup'],['5','Languages supported']],
+ ['Recommender','Content tags','Dashboards','Experiment tracking']),
+/* Use cases */
+E('UC-01','use_case','Invoice exception triage','Cross-industry','Process automation','Reads incoming invoices, flags the ones that break a rule such as a missing purchase order or a price mismatch, and routes each to the right approver with the reason attached.',{cat:'Back office',ai:'Rules and language model',cx:'Medium'}),
+E('UC-02','use_case','Store-level markdown suggestions','Retail','Applied AI','Suggests which slow-moving items to discount in each store, and by how much, based on stock age and local sell-through.',{cat:'Pricing',ai:'Forecasting',cx:'Medium'}),
+E('UC-03','use_case','Appointment no-show prediction','Healthcare','Applied AI','Scores each upcoming appointment for no-show risk so front desks can send a reminder or offer the slot to a waiting patient.',{cat:'Scheduling',ai:'Predictive model',cx:'Low'}),
+E('UC-04','use_case','Plain-language metric explainer','Cross-industry','Dashboards and reporting','Adds a short panel to any dashboard that explains what a metric means, how it is calculated, and what changed since last week.',{cat:'Analytics',ai:'Language model',cx:'Low'}),
+E('UC-05','use_case','Route delay early warning','Logistics','Applied AI','Flags shipments likely to arrive late a day ahead, using weather, port queues and past carrier performance, so planners can reroute.',{cat:'Operations',ai:'Predictive model',cx:'High'}),
+E('UC-06','use_case','Internal policy question assistant','Financial services','Applied AI','Answers staff questions about internal policies from the approved handbook only, and links to the paragraph it used.',{cat:'Knowledge',ai:'Retrieval assistant',cx:'Medium'}),
+E('UC-07','use_case','Meter anomaly alerts','Energy','Data foundations','Watches readings for sudden drops, flat lines and spikes, and opens a ticket for the field team with the meter history attached.',{cat:'Monitoring',ai:'Anomaly detection',cx:'Medium'}),
+E('UC-08','use_case','Recipe cost tracker','Food and hospitality','Dashboards and reporting','Shows the cost of each menu item as supplier prices change, and flags dishes whose margin falls below target.',{cat:'Finance',ai:'Rules',cx:'Low'}),
+E('UC-09','use_case','Course drop-off finder','Education','Dashboards and reporting','Shows where in a course learners stop, by lesson, so authors know which part to rewrite first.',{cat:'Learning',ai:'Analytics',cx:'Low'}),
+E('UC-10','use_case','Photo-based quality checks','Manufacturing','Applied AI','Compares a photo of each finished part to a reference and flags visible defects for a person to confirm.',{cat:'Quality',ai:'Computer vision',cx:'High'}),
+E('UC-11','use_case','Permit application status tracker','Public sector','Process automation','Gives applicants a live status for each step of a permit and alerts staff when an application has waited too long.',{cat:'Citizen services',ai:'Rules',cx:'Low'}),
+E('UC-12','use_case','Audience segment builder','Media','Applied AI','Groups readers by what they read and when, so editors can see which segments grow and plan newsletters for each.',{cat:'Audience',ai:'Clustering',cx:'Medium'}),
+/* Playbooks */
+E('PB-01','playbook','Metric definition playbook','Cross-industry','Dashboards and reporting','A step-by-step guide for agreeing what a metric means before anyone builds a chart: owner, formula, source, and what is excluded.'),
+E('PB-02','playbook','Dashboard review checklist','Cross-industry','Dashboards and reporting','Twelve questions to ask before a dashboard goes live, from "does the title state the finding" to "who is the owner a month from now".'),
+E('PB-03','playbook','Discovery workshop guide','Cross-industry','Data foundations','Agenda, prompts and a one-page output for a half-day workshop that turns a vague request into a short list of decisions to support.'),
+E('PB-04','playbook','Stakeholder interview kit','Cross-industry','Dashboards and reporting','Interview questions, a note template and a way to cluster answers, for learning how people actually use reports today.'),
+E('PB-05','playbook','Data handoff checklist','Cross-industry','Data foundations','What to document, test and demonstrate when a data product moves from the build team to the people who will run it.'),
+E('PB-06','playbook','Launch readiness checklist','Cross-industry','Process automation','A short list that covers access, training, support paths and a rollback plan before a new tool reaches its users.'),
+/* Blogs */
+E('BL-01','blog','How to pick the first metric for a new team','Cross-industry','Dashboards and reporting','Start with the decision the team makes every week, then work back to the one number that would change it.'),
+E('BL-02','blog','Why dashboards go unused after launch','Cross-industry','Dashboards and reporting','Most unused dashboards answer a question nobody asked. Four habits that keep a dashboard in daily use.'),
+E('BL-03','blog','Five questions to ask before you build a forecast','Cross-industry','Applied AI','What decision does it feed, how often does it run, who owns the number, how will you know it is wrong, and what happens then.'),
+E('BL-04','blog','Writing chart titles that state the finding','Cross-industry','Dashboards and reporting','A title like "Wait times fell 23% after the new check-in" does more than "Wait times by month". Examples and a quick rewrite method.'),
+E('BL-05','blog','A simple weekly routine for data quality','Cross-industry','Data foundations','Fifteen minutes, three checks and one shared note keep most quality problems from reaching a report.'),
+E('BL-06','blog','When a spreadsheet is the right answer','Cross-industry','Process automation','Not every question needs a pipeline. A short test for deciding when to stay in a spreadsheet and when to move out.'),
+E('BL-07','blog','What a good data handoff looks like','Cross-industry','Data foundations','The documents, demos and named owners that let a team run a data product without the people who built it.'),
+E('BL-08','blog','Designing alerts people do not mute','Cross-industry','Process automation','Fewer, clearer alerts with a named owner and a next step. How to cut an alert list in half without missing what matters.'),
+/* Videos */
+E('VD-01','video','Two-minute tour: the staffing planner','Retail','Process automation','A short walkthrough of a weekly staffing planner, from forecast to a draft schedule a manager can adjust.',{vt:'Recorded',fmt:'Short'}),
+E('VD-02','video','Webinar: designing dashboards people open every day','Cross-industry','Dashboards and reporting','A 40-minute session on titles, layout and metric definitions that keep dashboards in daily use.',{vt:'Webinar',fmt:'Long'}),
+E('VD-03','video','Two-minute tour: searching approved documents','Healthcare','Applied AI','A short demo of a search assistant that answers from approved documents and shows its source.',{vt:'Recorded',fmt:'Short'}),
+E('VD-04','video','Walkthrough: a hospital network data platform','Healthcare','Data foundations','How eleven separate data stores become one governed platform, in a ten-minute architecture tour.',{vt:'Recorded',fmt:'Long'}),
+/* Decks and brochures */
+E('CD-01','capability_deck','Studio overview deck','Cross-industry','Data foundations','Who we are, how we work, and a selection of case studies, in twelve slides.'),
+E('CD-02','capability_deck','Retail practice deck','Retail','Applied AI','Forecasting, staffing and shelf analytics for retailers, with three case studies.'),
+E('CD-03','capability_deck','Healthcare practice deck','Healthcare','Data foundations','Patient flow, document search and governed platforms for healthcare groups.'),
+E('BR-01','brochure','Dashboard design audit: one-pager','Cross-industry','Dashboards and reporting','A two-week review of an existing dashboard set, with a ranked list of fixes.'),
+E('BR-02','brochure','Applied AI services: one-pager','Cross-industry','Applied AI','Forecasting, search and automation services, with typical timelines and team sizes.'),
+E('BR-03','brochure','Data foundations starter package','Cross-industry','Data foundations','A fixed-scope first project that brings two or three sources into one governed warehouse.')
+];
+
+const TYPES=[['case_study','Case studies','Case study'],['use_case','Use cases','Use case'],['playbook','Playbooks','Playbook'],['capability_deck','Capability decks','Capability deck'],['brochure','Brochures','Brochure'],['video','Videos','Video'],['blog','Blogs','Blog']];
+const TLABEL=Object.fromEntries(TYPES.map(t=>[t[0],t[2]]));
+const PSHORT={};
+const ITEMS=DATA.map(it=>{
+  it.hay=[it.title,it.client||'',it.desc||'',it.industry,it.platform,(it.work||[]).join(' '),(it.tech||[]).join(' '),it.cat||'',it.ai||'',TLABEL[it.type]].join(' ').toLowerCase();
+  it.slide=it.type==='case_study'&&!!it.desc; return it });
+const byId=Object.fromEntries(ITEMS.map(i=>[i.id,i]));
+
+/* ---------- Slide content: curated entries carry full fields; others are derived from the description ---------- */
+const sents=t=>(t.match(/[^.!?]+[.!?]+(?:\s|$)|[^.!?]+$/g)||[t]).map(s=>s.trim()).filter(Boolean);
+const clip=(s,n)=>s.length>n?s.slice(0,n-1).replace(/\s+\S*$/,'')+'...':s;
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+function deriveMetrics(it){
+  const out=[]; const STOP=/^(in|for|across|through|using|while|and|to|with|by|of|on|from|that|which|as|per|at)$/i;
+  for(const s of sents(it.desc)){
+    const re=/(\d+(?:\.\d+)?(?:\s?[\u2013-]\s?\d+(?:\.\d+)?)?)\s?(%|x|\u00d7)(?![A-Za-z])/gi; let m;
+    while((m=re.exec(s))&&out.length<3){
+      const val=m[1].replace(/\s/g,'')+(m[2]==='%'?'%':'x');
+      const bseg=s.slice(0,m.index).split(/[,;:()\u2014]/).pop().trim().split(/\s+/).filter(Boolean);
+      const prev=(bseg[bseg.length-1]||'').toLowerCase(); let label='';
+      if(['by','of','to','than'].includes(prev)){ const w=bseg.slice(0,-1); while(w.length&&STOP.test(w[w.length-1])) w.pop(); label=w.slice(-3).join(' '); }
+      if(!label||/fernwood/i.test(label)){ const aw=s.slice(m.index+m[0].length).split(/[,;:()\u2014.]/)[0].trim().split(/\s+/).filter(Boolean); const w=[]; for(const x of aw){ if(w.length&&STOP.test(x)) break; w.push(x); if(w.length>=3) break } label=w.join(' '); }
+      label=cap(label.replace(/[^A-Za-z0-9\- ]/g,'').trim())||'Reported result';
+      if(!out.some(o=>o[0]===val)) out.push([val,label]);
+    } }
+  return out;
+}
+function slideData(it){
+  if(it._sd) return it._sd;
+  let d;
+  if(it.problem){ d={problem:it.problem,built:it.built,cpts:it.cpts,spts:it.spts,metrics:it.metrics,tech:it.tech.slice(0,4)}; }
+  else {
+    const ss=sents(it.desc); const half=Math.max(1,Math.ceil(ss.length/2));
+    const a=ss.slice(0,half), b=ss.slice(half);
+    const ps=PSHORT[it.platform]||it.platform; const tech=(it.tech&&it.tech.length?it.tech:[ps]).slice(0,4);
+    let m=deriveMetrics(it);
+    const fb=[[ps,'Primary platform'],[tech.length+(tech.length===1?' tool':' tools'),'In the delivery stack'],[it.industry,'Industry']];
+    while(m.length<3) m.push(fb[m.length]);
+    const focus=(it.work&&it.work[0])?it.work[0]:'Data and analytics';
+    const bl=x=>x.slice(0,3).map(s=>clip(s.replace(/\s+/g,' '),170));
+    d={problem:clip(a.join(' '),360),built:b.length?clip(b.join(' '),360):'Built on '+ps+'. Focus area: '+focus+'.',
+       cpts:bl(a.length>1?a:ss.slice(0,1)),spts:b.length?bl(b):['Built on '+ps,'Focus area: '+focus,'Delivered by '+DATA_CO],metrics:m.slice(0,3),tech};
+    if(!d.cpts.length) d.cpts=['See the overview'];
+  }
+  return it._sd=d;
+}
+const DATA_CO='Fernwood Data Co.';
+const THEMES={
+  A:{dark:'0B1026',main:'3552F0',accent:'FFB23F',bg:'F2F2EF',card:'FFFFFF',tint:'E9ECFF',text:'0B1026',muted:'5F6375',line:'E3E3DF',soft:'B8C2FF',c1:'3D63FF',c2:'A26BFF',c3:'FFB23F'},
+  B:{dark:'070B1C',main:'7340E6',accent:'FFB23F',bg:'F6F3FF',card:'FFFFFF',tint:'ECE4FF',text:'0B1026',muted:'5F6375',line:'E0D9F2',soft:'CDBBFF',c1:'3D63FF',c2:'A26BFF',c3:'FFB23F'}
+};
+const strip=(C,y,x0,w)=>[R(x0,y,w/3,0.1,C.c1),R(x0+w/3,y,w/3,0.1,C.c2),R(x0+2*w/3,y,w/3,0.1,C.c3)];
+const plain=s=>s.replace(/\*\*/g,'');
+function lineCount(text,size,w,bold){
+  const cw=size/72*(bold?0.58:0.53), per=Math.max(1,Math.floor(w/cw)); let n=0;
+  for(const p of text.split('\n')){ let cur=0,l=1; for(const word of plain(p).split(' ')){ const len=word.length+(cur?1:0); if(cur+len>per&&cur>0){l++;cur=word.length}else cur+=len } n+=l }
+  return n;
+}
+function fit(text,w,h,max,min,bold,gap){
+  gap=gap||0; const paras=text.split('\n').length;
+  for(let s=max;s>=min;s-=0.5){ if(lineCount(text,s,w,bold)*s*1.28/72+(paras-1)*gap<=h) return s }
+  return min;
+}
+function fit1(text,w,max,min){ const s=w/(plain(text).length*0.6/72); return Math.max(min,Math.min(max,Math.floor(s*2)/2)) }
+const R=(x,y,w,h,fill,line,rad)=>({k:'r',x,y,w,h,fill,line:line||null,rad:rad||0});
+const T=(x,y,w,h,text,size,color,o)=>Object.assign({k:'t',x,y,w,h,text,size,color,bold:false,align:'l',v:'t',gap:0},o||{});
+const descriptor=it=>it.descriptor?it.descriptor:it.named===false||!it.client?(it.industry==='Cross-industry'?'A multi-industry client':'A '+it.industry.toLowerCase()+' organization'):(it.industry==='Cross-industry'?'A multi-industry client':'A '+it.industry.toLowerCase()+' company');
+const wmark=(it,o)=>(o.anon||!it.client)?'Fernwood':it.client;
+
+function stdSpec(it,o){
+  const C=o.C, s=[], d=slideData(it), name=wmark(it,o), m=d.metrics;
+  s.push(R(0,0,10,5.625,C.bg));
+  s.push(R(0.4,0.3,1.9,0.55,C.card,C.line,0.1));
+  s.push(T(0.45,0.3,1.8,0.55,name,fit1(name,1.75,14,8),C.dark,{bold:true,align:'c',v:'m'}));
+  s.push(T(2.5,0.3,4.2,0.55,descriptor(it),10,C.muted,{v:'m'}));
+  const ps=PSHORT[it.platform]||it.platform;
+  s.push(R(7.0,0.375,2.6,0.4,C.tint,null,0.2));
+  s.push(T(7.0,0.375,2.6,0.4,it.platform,fit1(it.platform,2.4,9,6.5),C.main,{bold:true,align:'c',v:'m'}));
+  s.push(T(0.4,1.05,5.2,0.25,(it.industry+'  /  '+((it.work&&it.work[0])?clip(it.work[0],34):'Case study')).toUpperCase(),8,C.main,{bold:true}));
+  s.push(T(0.4,1.3,5.2,0.95,it.title,fit(it.title,5.2,0.95,26,13,true),C.text,{bold:true}));
+  const cs=Math.min(fit(d.problem,4.9,0.88,13,7.5),fit(d.built,4.9,0.95,13,7.5));
+  s.push(R(0.4,2.4,5.2,1.25,C.card,C.line,0.12));
+  s.push(T(0.55,2.48,4.9,0.2,it.problem?'THE CHALLENGE':'THE PROJECT',7.5,C.main,{bold:true}));
+  s.push(T(0.55,2.7,4.9,0.88,d.problem,cs,C.text));
+  s.push(R(0.4,3.75,5.2,1.3,C.tint,null,0.12));
+  s.push(T(0.55,3.83,4.9,0.2,it.problem?'WHAT WE BUILT':'APPROACH AND OUTCOME',7.5,C.main,{bold:true}));
+  s.push(T(0.55,4.05,4.9,0.95,d.built,cs,C.text));
+  s.push(R(5.9,1.05,3.7,1.95,C.dark,null,0.14));
+  s.push(T(6.1,1.2,3.3,0.95,m[0][0],fit1(m[0][0],3.3,44,16),'FFFFFF',{bold:true,v:'m'}));
+  s.push(T(6.1,2.2,3.3,0.7,m[0][1],fit(m[0][1],3.3,0.7,12,8),C.soft));
+  for(let i=1;i<3;i++){ const x=5.9+(i-1)*1.9;
+    s.push(R(x,3.15,1.8,1.1,C.card,C.line,0.12));
+    s.push(T(x+0.12,3.22,1.56,0.5,m[i][0],fit1(m[i][0],1.56,22,8),C.main,{bold:true,v:'m'}));
+    s.push(T(x+0.12,3.74,1.56,0.45,m[i][1],fit(m[i][1],1.56,0.45,8.5,6.5),C.muted));
+  }
+  s.push(T(5.9,4.38,3.7,0.2,'BUILT WITH',7.5,C.main,{bold:true}));
+  d.tech.slice(0,4).forEach((t,i)=>{ const x=5.9+i*0.95;
+    s.push(R(x,4.63,0.88,0.42,C.tint,null,0.08));
+    s.push(T(x,4.63,0.88,0.42,t,fit1(t,0.8,8,5.5),C.text,{align:'c',v:'m'}));
+  });
+  s.push(T(0.4,5.25,5,0.25,DATA_CO+'  /  Fictional demo data',7,C.muted));
+  s.push(T(6.6,5.25,3,0.25,'Read the full case study  >',7.5,C.main,{bold:true,align:'r'}));
+  s.push(...strip(C,5.525,0,10));
+  return s;
+}
+function detSpec(it,o){
+  const C=o.C, s=[], d=slideData(it), name=wmark(it,o), m=d.metrics;
+  s.push(R(0,0,10,5.625,C.card));
+  s.push(R(0,0,3.8,5.625,C.dark));
+  s.push(R(0.35,0.35,1.9,0.55,C.card,null,0.1));
+  s.push(T(0.4,0.35,1.8,0.55,name,fit1(name,1.75,14,8),C.dark,{bold:true,align:'c',v:'m'}));
+  s.push(T(0.35,0.98,3.1,0.25,it.platform.toUpperCase(),7.5,C.soft,{bold:true}));
+  s.push(T(0.35,1.45,3.1,0.2,it.industry.toUpperCase(),8,C.accent,{bold:true}));
+  s.push(T(0.35,1.68,3.1,1.1,it.title,fit(it.title,3.1,1.1,19,10,true),'FFFFFF',{bold:true}));
+  s.push(T(0.35,2.85,3.1,0.8,m[0][0],fit1(m[0][0],3.1,46,16),C.accent,{bold:true,v:'m'}));
+  s.push(T(0.35,3.65,3.1,0.5,m[0][1],fit(m[0][1],3.1,0.5,10.5,8),C.soft));
+  for(let i=1;i<3;i++){ const x=0.35+(i-1)*1.6;
+    s.push(R(x,4.25,1.45,0.01,C.main));
+    s.push(T(x,4.32,1.45,0.4,m[i][0],fit1(m[i][0],1.45,20,8),'FFFFFF',{bold:true,v:'m'}));
+    s.push(T(x,4.72,1.45,0.45,m[i][1],fit(m[i][1],1.45,0.45,8,6.5),C.soft));
+  }
+  const bl=a=>a.map(x=>'•  '+x).join('\n');
+  const cp=bl(d.cpts), sp=bl(d.spts);
+  const sz=Math.min(fit(cp,5.4,1.45,15,7.5,false,0.12),fit(sp,5.4,1.9,15,7.5,false,0.12));
+  s.push(T(4.2,0.4,5.4,0.22,it.problem?'THE CHALLENGE':'THE PROJECT',8,C.main,{bold:true}));
+  s.push(T(4.2,0.7,5.4,1.45,cp,sz,C.text,{gap:0.12}));
+  s.push(R(4.2,2.3,5.4,0.01,C.line));
+  s.push(T(4.2,2.45,5.4,0.22,it.problem?'OUR SOLUTION':'APPROACH AND OUTCOME',8,C.main,{bold:true}));
+  s.push(T(4.2,2.75,5.4,1.9,sp,sz,C.text,{gap:0.12}));
+  s.push(T(4.2,4.85,5.4,0.22,'BUILT WITH  '+d.tech.join('  /  '),7.5,C.muted,{bold:true}));
+  s.push(T(4.2,5.25,5.4,0.25,DATA_CO+'  /  Fictional demo data',7,C.muted));
+  s.push(...strip(C,5.525,0,10));
+  return s;
+}
+const makeSpec=(it,v,o)=>v==='det'?detSpec(it,o):stdSpec(it,o);
+
+/* ---------- Renderer 1: HTML ---------- */
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const boldHtml=p=>p.split('**').map((x,i)=>i%2?'<b>'+esc(x)+'</b>':esc(x)).join('');
+function renderSpec(spec){
+  const px=n=>(n*96).toFixed(2)+'px';
+  return spec.map(e=>{
+    const pos='left:'+px(e.x)+';top:'+px(e.y)+';width:'+px(e.w)+';height:'+px(e.h)+';';
+    if(e.k==='r') return '<div style="'+pos+'background:#'+e.fill+';'+(e.line?'border:1px solid #'+e.line+';':'')+'border-radius:'+px(e.rad)+'"></div>';
+    const jc={t:'flex-start',m:'center',b:'flex-end'}[e.v], ta={l:'left',c:'center',r:'right'}[e.align];
+    const ps=e.text.split('\n').map((p,i,a)=>'<p style="'+(i<a.length-1&&e.gap?'margin-bottom:'+px(e.gap)+';':'')+'">'+boldHtml(p)+'</p>').join('');
+    return '<div style="'+pos+'display:flex;flex-direction:column;justify-content:'+jc+';text-align:'+ta+';font-size:'+(e.size*96/72).toFixed(2)+'px;line-height:1.28;color:#'+e.color+';font-weight:'+(e.bold?700:400)+'">'+ps+'</div>';
+  }).join('');
+}
+const ro=new ResizeObserver(es=>es.forEach(en=>{ const sl=en.target.firstElementChild; if(sl) sl.style.transform='scale('+(en.contentRect.width/960)+')' }));
+function mountThumb(el,spec){ el.innerHTML='<div class="sl">'+renderSpec(spec)+'</div>'; ro.observe(el); el.firstElementChild.style.transform='scale('+(el.clientWidth/960||0.3)+')' }
+
+/* ---------- Renderer 2: native PowerPoint shapes ---------- */
+const runs=(text,bold)=>{ const out=[]; const ps=text.split('\n');
+  ps.forEach((p,pi)=>{ const parts=p.split('**').map((x,i)=>({x,b:i%2===1})).filter(r=>r.x);
+    parts.forEach((r,ri)=>out.push({text:r.x,options:{bold:bold||r.b,breakLine:ri===parts.length-1&&pi<ps.length-1}})) });
+  return out };
+function addSpec(slide,spec){
+  for(const e of spec){
+    if(e.k==='r'){
+      const opt={x:e.x,y:e.y,w:e.w,h:e.h,fill:{color:e.fill}}; if(e.line) opt.line={color:e.line,width:0.75}; if(e.rad) opt.rectRadius=e.rad;
+      slide.addShape(e.rad?'roundRect':'rect',opt);
+    } else {
+      slide.addText(runs(e.text,e.bold),{x:e.x,y:e.y,w:e.w,h:e.h,fontFace:'Calibri',fontSize:e.size,color:e.color,
+        align:{l:'left',c:'center',r:'right'}[e.align],valign:{t:'top',m:'middle',b:'bottom'}[e.v],margin:0,fit:'none',paraSpaceAfter:e.gap*72});
+    }
+  }
+}
+async function buildPptx(items,ver,o){
+  const P=new PptxGenJS(); P.layout='LAYOUT_16x9'; P.title='Fernwood Knowledge Base (demo)'; P.author=DATA_CO;
+  if(items.length>1){
+    let n=0; const rows=items.slice(0,40);
+    const sl=P.addSlide(); addSpec(sl,[R(0,0,10,5.625,o.C.dark),T(0.5,0.4,9,0.6,'Case study library',28,'FFFFFF',{bold:true}),
+      T(0.5,1.0,9,0.3,items.length+' case studies  /  fictional demo data',11,o.C.soft)]);
+    const half=Math.ceil(rows.length/2);
+    [rows.slice(0,half),rows.slice(half)].forEach((col,ci)=>{ sl.addText(col.map(it=>({text:clip(it.title,70),options:{breakLine:true}})),
+      {x:0.5+ci*4.6,y:1.6,w:4.3,h:3.6,fontFace:'Calibri',fontSize:9.5,color:'FFFFFF',valign:'top',margin:0,paraSpaceAfter:5,fit:'none'}) });
+  }
+  for(const it of items){ for(const v of (ver==='both'?['std','det']:[ver])){
+    const sl=P.addSlide(); addSpec(sl,makeSpec(it,v,o));
+    sl.addNotes(it.title+'\nIndustry: '+it.industry+'\nPlatform: '+it.platform+'\nFictional demo data.');
+  } }
+  return P.write({outputType:'blob'});
+}
+
+/* ---------- App state and UI ---------- */
+const S={q:'',coll:'all',industry:new Set(),platform:new Set(),work:new Set(),ai:new Set(),group:'type',ver:'std',theme:'A',anon:false,sel:new Set(),open:null,tab:'std',limit:{}};
+const $=s=>document.querySelector(s);
+const opts=()=>({C:THEMES[S.theme],anon:S.anon});
+const cnt=(arr,f)=>{const m={};arr.forEach(i=>f(i).forEach(v=>m[v]=(m[v]||0)+1));return m};
+const FACETS=[['industry','Industry',i=>[i.industry]],['platform','Practice area',i=>[i.platform]],['work','Work type',i=>i.work||[]],['ai','AI approach',i=>i.ai?[i.ai]:[]]];
+function matches(it,skip){
+  if(skip!=='coll'&&S.coll!=='all'&&it.type!==S.coll) return false;
+  const q=S.q.toLowerCase().split(/\s+/).filter(Boolean); if(!q.every(w=>it.hay.includes(w))) return false;
+  for(const [k,,f] of FACETS){ if(skip===k||!S[k].size) continue; if(!f(it).some(v=>S[k].has(v))) return false }
+  return true;
+}
+const shown=()=>ITEMS.filter(it=>matches(it));
+function renderStats(){
+  const n=t=>ITEMS.filter(i=>i.type===t).length;
+  $('#stats').innerHTML=[[ITEMS.length,'entries'],[n('case_study'),'case studies'],[n('use_case'),'use cases'],[ITEMS.filter(i=>i.slide).length,'slide-ready case studies']]
+    .map(a=>'<li><b>'+a[0]+'</b><span>'+a[1]+'</span></li>').join('');
+}
+function renderRail(){
+  let h='<fieldset><legend>Collection</legend><div class="colls" role="group">';
+  const all=ITEMS.filter(i=>matches(i,'coll')).length;
+  h+='<button type="button" data-coll="all" aria-pressed="'+(S.coll==='all')+'"><span>All</span><span class="n">'+all+'</span></button>';
+  for(const [k,pl] of TYPES){ const n=ITEMS.filter(i=>i.type===k&&matches(i,'coll')).length;
+    h+='<button type="button" data-coll="'+k+'" aria-pressed="'+(S.coll===k)+'"><span>'+pl+'</span><span class="n">'+n+'</span></button>'; }
+  h+='</div></fieldset>';
+  for(const [key,label,f] of FACETS){
+    const c=cnt(ITEMS.filter(it=>matches(it,key)),f);
+    const vals=[...new Set([...ITEMS.flatMap(f)])].sort((a,b)=>(c[b]||0)-(c[a]||0)||a.localeCompare(b));
+    if(!vals.length) continue;
+    const show=S['more_'+key]?vals:vals.slice(0,8);
+    h+='<fieldset><legend>'+label+'</legend>';
+    for(const v of show){ const n=c[v]||0; const id='f-'+key+'-'+v.replace(/\W+/g,'-');
+      h+='<div class="opt'+(n===0&&!S[key].has(v)?' zero':'')+'"><label for="'+id+'"><input type="checkbox" id="'+id+'" data-k="'+key+'" data-v="'+esc(v)+'"'+(S[key].has(v)?' checked':'')+'> <span>'+esc(v)+'</span></label><span class="n">'+n+'</span></div>'; }
+    if(vals.length>8) h+='<button type="button" data-more="'+key+'" style="margin-top:4px;min-height:0;padding:3px 8px;font-size:12px">'+(S['more_'+key]?'Show fewer':'Show all '+vals.length)+'</button>';
+    h+='</fieldset>';
+  }
+  $('#rail').innerHTML=h;
+}
+function renderChips(){
+  const c=[]; for(const [k] of FACETS) for(const v of S[k]) c.push([k,v]);
+  $('#chips').innerHTML=c.map(([k,v])=>'<button type="button" class="chip" data-chip="'+k+'" data-v="'+esc(v)+'" aria-label="Remove filter '+esc(v)+'">'+esc(v)+' <span aria-hidden="true">&times;</span></button>').join('');
+}
+function groupKey(it){ return S.group==='type'?TYPES.find(x=>x[0]===it.type)[1]:S.group==='industry'?it.industry:S.group==='platform'?it.platform:'' }
+const LIM=48;
+function cardHtml(it){
+  const sel=S.sel.has(it.id);
+  if(it.type==='case_study'){
+    const name=S.anon||!it.client?descriptor(it):it.client;
+    return '<article class="card cs'+(sel?' sel':'')+'"><button type="button" class="thumb" data-id="'+it.id+'" aria-label="Preview slide: '+esc(it.title)+'"></button>'
+     +'<div><div class="t">'+esc(it.title)+(it.isNew?'<span class="badge">New</span>':it.featured?'<span class="badge">Featured</span>':'')+'</div><div class="s">'+esc(name)+' · '+esc(it.industry)+'</div></div>'
+     +'<label class="chk" for="s-'+it.id+'" style="min-height:0"><input type="checkbox" id="s-'+it.id+'" data-sel="'+it.id+'"'+(sel?' checked':'')+'> Select slide</label></article>';
+  }
+  const meta=[it.industry!=='Cross-industry'?it.industry:'',it.cat||it.vt||'',it.platform||''].filter(Boolean).join(' · ');
+  return '<article class="card tx'+(sel?' sel':'')+'" data-open="'+it.id+'" tabindex="0" role="button" aria-label="Open: '+esc(it.title)+'"><span class="pill">'+TLABEL[it.type]+'</span><div class="t">'+esc(it.title)+(it.isNew?'<span class="badge">New</span>':'')+'</div>'
+    +(meta?'<div class="s">'+esc(meta)+'</div>':'')+(it.desc?'<div class="d">'+esc(it.desc)+'</div>':'')+'</article>';
+}
+function renderResults(){
+  const items=shown(); const n=S.sel.size;
+  const slideShown=items.filter(i=>i.type==='case_study'||i.slide);
+  $('#count').textContent=items.length+' of '+ITEMS.length+' entries'+(n?' · '+n+' slides selected':'');
+  const exp=n?ITEMS.filter(i=>S.sel.has(i.id)):items.filter(i=>i.type==='case_study'&&i.slide); const per=S.ver==='both'?2:1;
+  $('#export').textContent='Download PowerPoint ('+exp.length*per+' slide'+(exp.length*per===1?'':'s')+')';
+  $('#export').disabled=!exp.length;
+  ro.disconnect();
+  if(!items.length){ $('#results').innerHTML='<div class="empty">Nothing matches these filters. Clear a filter or change the search.</div>'; return }
+  const groups={}; items.forEach(it=>{ (groups[groupKey(it)]=groups[groupKey(it)]||[]).push(it) });
+  let keys=Object.keys(groups);
+  if(S.group==='type') keys.sort((a,b)=>TYPES.findIndex(t=>t[1]===a)-TYPES.findIndex(t=>t[1]===b)); else keys.sort();
+  $('#results').innerHTML=keys.map(k=>{ const g=groups[k]; const lim=S.limit[k]||LIM; const part=g.slice(0,lim);
+    const cs=part.filter(i=>i.type==='case_study'), tx=part.filter(i=>i.type!=='case_study');
+    return '<div class="group">'+(k?'<h2>'+esc(k)+'<small>'+g.length+'</small></h2>':'')
+     +(cs.length?'<div class="grid">'+cs.map(cardHtml).join('')+'</div>':'')
+     +(tx.length?'<div class="grid txt" style="'+(cs.length?'margin-top:16px':'')+'">'+tx.map(cardHtml).join('')+'</div>':'')
+     +(g.length>lim?'<button type="button" class="more" data-more-group="'+esc(k)+'">Show '+Math.min(LIM,g.length-lim)+' more of '+(g.length-lim)+'</button>':'')+'</div>'; }).join('');
+  document.querySelectorAll('#results .thumb').forEach(el=>{ const it=byId[el.dataset.id]; mountThumb(el,makeSpec(it,S.ver==='det'?'det':'std',opts())) });
+}
+function renderAll(){ renderStats(); renderRail(); renderChips(); renderResults() }
+
+/* modal */
+let lastFocus=null;
+function openPreview(id,fromHash){
+  const it=byId[id]; if(!it) return; S.open=id; lastFocus=document.activeElement;
+  $('#modal').hidden=false; paintModal(); $('#mClose').focus(); if(!fromHash&&location.hash!=='#'+id) location.hash=id;
+}
+function paintModal(){
+  const it=byId[S.open]; if(!it) return; const sl=it.slide;
+  $('#tabs').hidden=!sl; $('#mDl').hidden=!sl; $('#mSel').hidden=!sl; $('#mThumb').hidden=!sl;
+  if(sl){
+    $('#tabStd').setAttribute('aria-pressed',S.tab==='std'); $('#tabDet').setAttribute('aria-pressed',S.tab==='det');
+    mountThumb($('#mThumb'),makeSpec(it,S.tab,opts()));
+    $('#mSel').textContent=S.sel.has(it.id)?'Remove from selection':'Add to selection';
+  }
+  const dl=[['Collection',TLABEL[it.type]],['Industry',it.industry],['Practice area',it.platform],['Work type',(it.work||[]).join(', ')],['Technology',(it.tech||[]).join(', ')],['Category',it.cat],['AI approach',it.ai],['Complexity',it.cx],['Format',[it.fmt,it.vt].filter(Boolean).join(' · ')],['Client',(!S.anon&&it.client)?it.client:'']].filter(r=>r[1]);
+  $('#mMeta').innerHTML='<h3>'+esc(it.title)+'</h3>'+(it.desc?'<p>'+esc(it.desc)+'</p>':'<p style="color:var(--muted)">No description on this entry.</p>')+'<dl>'+dl.map(r=>'<dt>'+r[0]+'</dt><dd>'+esc(r[1])+'</dd>').join('')+'</dl>';
+}
+function closePreview(){ $('#modal').hidden=true; ro.unobserve($('#mThumb')); S.open=null; if(location.hash) history.replaceState(null,'',location.pathname+location.search); if(lastFocus&&lastFocus.focus) lastFocus.focus() }
+
+/* export */
+function status(t){ $('#status').textContent=t }
+async function save(items,ver,fname){
+  status('Building PowerPoint...');
+  try{
+    if(typeof PptxGenJS==='undefined'){ status('The PowerPoint library did not load. Check your connection and reload.'); return }
+    const blob=await buildPptx(items,ver,opts());
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=fname;
+    document.body.appendChild(a); a.click();
+    setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove() },1000);
+    status('Downloaded '+fname+'.');
+  }catch(e){ status('Could not build the file'+(e&&e.message?': '+e.message:'.')) }
+}
+
+/* events */
+let t0; $('#q').addEventListener('input',e=>{ clearTimeout(t0); t0=setTimeout(()=>{ S.q=e.target.value; S.limit={}; renderAll() },120) });
+$('#group').addEventListener('change',e=>{ S.group=e.target.value; S.limit={}; renderResults() });
+$('#ver').addEventListener('change',e=>{ S.ver=e.target.value; renderResults() });
+$('#theme').addEventListener('change',e=>{ S.theme=e.target.value; renderResults(); if(S.open) paintModal() });
+$('#anon').addEventListener('change',e=>{ S.anon=e.target.checked; renderResults(); if(S.open) paintModal() });
+$('#rail').addEventListener('click',e=>{ const c=e.target.closest('[data-coll]'); if(c){ S.coll=c.dataset.coll; S.limit={}; renderAll(); return }
+  const m=e.target.closest('[data-more]'); if(m){ S['more_'+m.dataset.more]=!S['more_'+m.dataset.more]; renderRail() } });
+$('#rail').addEventListener('change',e=>{ const k=e.target.dataset.k; if(!k) return; const v=e.target.dataset.v; e.target.checked?S[k].add(v):S[k].delete(v); S.limit={}; renderAll() });
+$('#chips').addEventListener('click',e=>{ const b=e.target.closest('[data-chip]'); if(!b) return; S[b.dataset.chip].delete(b.dataset.v); renderAll() });
+$('#results').addEventListener('click',e=>{
+  const mg=e.target.closest('[data-more-group]'); if(mg){ const k=mg.dataset.moreGroup; S.limit[k]=(S.limit[k]||LIM)+LIM; renderResults(); return }
+  const t=e.target.closest('.thumb'); if(t){ openPreview(t.dataset.id); return }
+  const o=e.target.closest('[data-open]'); if(o) openPreview(o.dataset.open) });
+$('#results').addEventListener('keydown',e=>{ if((e.key==='Enter'||e.key===' ')&&e.target.dataset&&e.target.dataset.open){ e.preventDefault(); openPreview(e.target.dataset.open) } });
+$('#results').addEventListener('change',e=>{ const id=e.target.dataset.sel; if(!id) return; e.target.checked?S.sel.add(id):S.sel.delete(id); renderResults() });
+$('#selall').addEventListener('click',()=>{ shown().filter(i=>i.type==='case_study'&&i.slide).forEach(i=>S.sel.add(i.id)); renderResults() });
+$('#clearsel').addEventListener('click',()=>{ S.sel.clear(); renderResults() });
+$('#export').addEventListener('click',()=>{ const items=S.sel.size?ITEMS.filter(i=>S.sel.has(i.id)):shown().filter(i=>i.type==='case_study'&&i.slide); save(items,S.ver,'fernwood-knowledge-base-demo.pptx') });
+$('#tabStd').addEventListener('click',()=>{ S.tab='std'; paintModal() });
+$('#tabDet').addEventListener('click',()=>{ S.tab='det'; paintModal() });
+$('#mSel').addEventListener('click',()=>{ const id=S.open; S.sel.has(id)?S.sel.delete(id):S.sel.add(id); paintModal(); renderResults() });
+$('#mDl').addEventListener('click',()=>{ const it=byId[S.open]; save([it],S.tab,'fernwood-'+it.id.toLowerCase()+'-'+S.tab+'.pptx') });
+$('#mClose').addEventListener('click',closePreview);
+$('#modal').addEventListener('click',e=>{ if(e.target.id==='modal') closePreview() });
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!$('#modal').hidden) closePreview() });
+window.addEventListener('hashchange',()=>{ const id=location.hash.slice(1); if(id&&byId[id]) openPreview(id,true); else if(!id&&!$('#modal').hidden) closePreview() });
+
+/* ---------- Content pipeline (demo data, in memory) ---------- */
+const STAGES=[['requested','Requested'],['drafting','AI draft'],['review','In review'],['approved','Approved'],['live','Live on website']];
+const TK=[
+ {id:'CT-118',title:'Appointment reminders cut no-shows at a dental group',type:'case_study',industry:'Healthcare',who:'Maya R.',owner:'Dev P.',due:'Nov 6',pri:'Medium',stage:'requested',video:false,brief:'A twelve-practice dental group lost revenue to missed appointments. We built a no-show score and a reminder flow tied to the booking system. Missed visits fell by a fifth in the first quarter.'},
+ {id:'CT-117',title:'How we size a data foundations project',type:'blog',industry:'Cross-industry',who:'Omar S.',owner:'Lena K.',due:'Nov 8',pri:'Low',stage:'requested',video:false,brief:'A plain walkthrough of the five questions we ask before estimating a warehouse build, with a worked example.'},
+ {id:'CT-116',title:'Fleet fuel dashboard for a regional bus operator',type:'case_study',industry:'Logistics',who:'Lena K.',owner:'Dev P.',due:'Nov 5',pri:'High',stage:'drafting',video:true,brief:'A bus operator could not see fuel use by route. We joined fuel cards and trip logs into one dashboard. Managers now spot high-use routes within a day.'},
+ {id:'CT-115',title:'Retail promo calendar playbook',type:'playbook',industry:'Retail',who:'Omar S.',owner:'Maya R.',due:'Nov 4',pri:'Medium',stage:'drafting',video:false,brief:'Steps for planning a promotion calendar with finance and stores, from goals to post-campaign review.'},
+ {id:'CT-114',title:'Claims triage assistant for an insurer',type:'use_case',industry:'Financial services',who:'Maya R.',owner:'Lena K.',due:'Nov 3',pri:'High',stage:'review',video:true,brief:'Reads new claims, flags missing documents and routes each claim to the right adjuster with the reason attached.'},
+ {id:'CT-113',title:'Metric glossary for a school network',type:'case_study',industry:'Education',who:'Dev P.',owner:'Omar S.',due:'Nov 2',pri:'Low',stage:'review',video:false,brief:'Fifty schools used six names for attendance. We agreed one glossary and rebuilt the reports on it. Principals now read the same numbers.'},
+ {id:'CT-112',title:'Meter alerts for a water utility',type:'use_case',industry:'Energy',who:'Lena K.',owner:'Dev P.',due:'Nov 1',pri:'Medium',stage:'approved',video:true,brief:'Watches meter readings for leaks and flat lines and opens a field ticket with the history attached.'},
+ {id:'CT-109',title:'Dashboard review checklist',type:'playbook',industry:'Cross-industry',who:'Maya R.',owner:'Omar S.',due:'Oct 28',pri:'Low',stage:'live',video:false,url:'/insights/dashboard-review-checklist',brief:'Twelve questions to ask before a dashboard goes live.'},
+ {id:'CT-107',title:'One patient-flow view across nine clinics',type:'case_study',industry:'Healthcare',who:'Dev P.',owner:'Lena K.',due:'Oct 24',pri:'Medium',stage:'live',video:true,url:'/work/patient-flow-nine-clinics',brief:'Each clinic tracked waits differently. A shared dashboard gave one definition of wait time.'}
+];
+const FEEDL=[['16:20','<b>Dev P.</b> approved <b>CT-107</b> and published it to <code>/work/patient-flow-nine-clinics</code>'],['15:05','Short demo video for <b>CT-107</b> generated from the case study'],['11:42','<b>Lena K.</b> moved <b>CT-112</b> to Approved'],['10:18','Brand check passed on <b>CT-114</b>: palette, type and logo rules']];
+const slug=t=>t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,48);
+const PATHS={case_study:'/work/',use_case:'/use-cases/',playbook:'/insights/',blog:'/insights/'};
+const nowT=()=>{const d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0')};
+const ini=n=>n.split(/\s+/).map(x=>x[0]).join('').slice(0,2);
+function logEv(h){ FEEDL.unshift([nowT(),h]) }
+function renderPipe(){
+  const cnt=k=>TK.filter(t=>t.stage===k).length;
+  const steps=['Request','Brief','AI draft in house style','Review','Publish to website','Library and slides'];
+  const cs=[null,null,'drafting','review','live',null];
+  $('#flow').innerHTML=steps.map((x,i)=>'<li>'+x+(cs[i]?'<b>'+cnt(cs[i])+'</b>':'')+'</li>'+(i<steps.length-1?'<li class="arr" aria-hidden="true">&rarr;</li>':'')).join('');
+  $('#board').innerHTML=STAGES.map(([k,l])=>{ const ts=TK.filter(t=>t.stage===k);
+    return '<section class="col" aria-label="'+l+'"><h3>'+l+'<span>'+ts.length+'</span></h3>'+ts.map(t=>{
+      const si=STAGES.findIndex(x=>x[0]===t.stage);
+      const fwd=['','Start AI draft','Send to review','Approve','Publish to website'][si+0]||'';
+      const nxt={requested:'Start AI draft',drafting:'Send to review',review:'Approve',approved:'Publish to website'}[t.stage];
+      return '<article class="tk"><div class="id"><span>'+t.id+'</span><span class="tag'+(t.pri==='High'?' hi':'')+'">'+t.pri+'</span></div><div class="tt">'+esc(t.title)+'</div>'
+       +'<div class="meta"><span class="tag">'+TLABEL[t.type]+'</span>'+(t.video?'<span class="tag vd">Demo video</span>':'')+(['review','approved','live'].includes(t.stage)?'<span class="tag ok">Brand check passed</span>':'')+'</div>'
+       +(t.url?'<div class="url">'+t.url+'</div>':'')
+       +'<div class="who"><span class="av" title="Owner">'+ini(t.owner)+'</span><span>'+esc(t.owner)+' &middot; due '+t.due+'</span></div>'
+       +'<div class="act">'+(si>0&&t.stage!=='live'?'<button type="button" data-back="'+t.id+'">Back</button>':'')+(nxt?'<button type="button" class="primary" data-fwd="'+t.id+'">'+nxt+'</button>':'')+'</div></article>' }).join('')+'</section>' }).join('');
+  $('#feed').innerHTML=FEEDL.map(f=>'<li><time>'+f[0]+'</time><span>'+f[1]+'</span></li>').join('');
+}
+function publishTicket(t){
+  t.url=PATHS[t.type]+slug(t.title);
+  const it={id:'NEW-'+t.id,type:t.type,title:t.title,industry:t.industry,platform:'Recently published',desc:t.brief,client:'',named:false,descriptor:'A '+t.industry.toLowerCase()+' organization',work:[],tech:[],featured:false,isNew:true};
+  it.hay=[it.title,it.desc,it.industry,TLABEL[it.type]].join(' ').toLowerCase(); it.slide=it.type==='case_study';
+  if(!byId[it.id]){ ITEMS.push(it); byId[it.id]=it }
+  logEv('<b>'+esc(t.owner)+'</b> published <b>'+t.id+'</b> to <code>'+t.url+'</code> and added it to the library'+(it.slide?' with a ready slide':''));
+  renderAll();
+}
+function moveTk(id,dir){
+  const t=TK.find(x=>x.id===id); const i=STAGES.findIndex(s=>s[0]===t.stage); const n=STAGES[i+dir]; if(!n) return;
+  t.stage=n[0];
+  if(dir>0){
+    if(n[0]==='drafting') logEv('Draft started for <b>'+t.id+'</b> from the brief, in house style');
+    if(n[0]==='review') logEv('Draft ready for <b>'+t.id+'</b>. Brand check passed'+(t.video?'. Short demo video generated from the material':'')+'. <b>'+esc(t.who)+'</b> asked to review');
+    if(n[0]==='approved') logEv('<b>'+esc(t.who)+'</b> approved <b>'+t.id+'</b>');
+    if(n[0]==='live'){ publishTicket(t) }
+  } else logEv('<b>'+t.id+'</b> moved back to '+n[1]);
+  renderPipe();
+}
+function showView(v){ const p=v==='pipe'; $('#viewLib').hidden=p; $('#viewPipe').hidden=!p; $('#vLib').setAttribute('aria-pressed',!p); $('#vPipe').setAttribute('aria-pressed',p); if(p) renderPipe(); else renderResults() }
+$('#vLib').addEventListener('click',()=>showView('lib')); $('#vPipe').addEventListener('click',()=>showView('pipe'));
+$('#rInd').innerHTML=[...new Set(DATA.map(d=>d.industry))].sort().map(v=>'<option>'+esc(v)+'</option>').join('');
+$('#board').addEventListener('click',e=>{ const f=e.target.closest('[data-fwd]'), b=e.target.closest('[data-back]'); if(f) moveTk(f.dataset.fwd,1); else if(b) moveTk(b.dataset.back,-1) });
+$('#reqForm').addEventListener('submit',e=>{ e.preventDefault();
+  const n=Math.max(...TK.map(t=>+t.id.slice(3)))+1; const d=new Date(Date.now()+7*864e5);
+  const t={id:'CT-'+n,title:$('#rTitle').value.trim(),type:$('#rType').value,industry:$('#rInd').value,who:'You',owner:'Dev P.',due:d.toLocaleDateString('en',{month:'short',day:'numeric'}),pri:'Medium',stage:'requested',video:$('#rVid').checked,brief:$('#rBrief').value.trim()};
+  TK.push(t); logEv('<b>You</b> requested <b>'+t.id+'</b> ('+TLABEL[t.type].toLowerCase()+'). Owner assigned: <b>Dev P.</b>'); e.target.reset(); renderPipe() });
+
+renderAll();
+if(location.hash.length>1&&byId[location.hash.slice(1)]) openPreview(location.hash.slice(1),true);
+</script>
+
+</body></html>

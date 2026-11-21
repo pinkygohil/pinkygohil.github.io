@@ -1,0 +1,141 @@
+1:"$Sreact.fragment"
+b:I[7150,[],""]
+:HL["/_next/static/media/22a5144ee8d83bca-s.p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/media/26d0ba92e140f0dc-s.p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/css/5245ab1f73a83614.css","style"]
+2:Td0a,(function () {
+  var root = document.getElementById("pg-loader");
+  if (!root) return;
+  try {
+    if (sessionStorage.getItem("pg-loader-seen")) { root.hidden = true; return; }
+    sessionStorage.setItem("pg-loader-seen", "1");
+  } catch (e) {}
+  root.classList.add("is-on");
+
+  var name = root.querySelector(".loader__name");
+  var light = root.querySelector(".loader__light");
+  var twinkle = root.querySelector(".loader__twinkle");
+  var chars = [].slice.call(root.querySelectorAll(".loader__ch"));
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var loaded = document.readyState === "complete";
+  window.addEventListener("load", function () { loaded = true; });
+
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  function ease(t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+
+  // Each letter holds a slice of one gradient that spans the whole name.
+  function paint() {
+    var w = name.scrollWidth;
+    chars.forEach(function (c) {
+      c.style.backgroundSize = w + "px 100%";
+      c.style.backgroundPosition = -c.offsetLeft + "px 0";
+    });
+  }
+
+  function sweep() {
+    return new Promise(function (done) {
+      var box = root.querySelector(".loader__mark").getBoundingClientRect();
+      var nb = name.getBoundingClientRect();
+      var first = chars[0].getBoundingClientRect();
+      var last = chars[chars.length - 1].getBoundingClientRect();
+      var y = nb.top - box.top + nb.height * 0.56;
+      var x0 = first.left - box.left - 14, x1 = last.right - box.left + 6;
+      var centers = chars.map(function (c) { var r = c.getBoundingClientRect(); return r.left - box.left + r.width / 2; });
+      var t0 = null;
+      light.style.opacity = "1";
+      function frame(now) {
+        if (t0 === null) t0 = now;
+        var t = Math.min(1, (now - t0) / 1100), x = x0 + (x1 - x0) * ease(t);
+        light.style.transform = "translate(" + x + "px," + y + "px)";
+        chars.forEach(function (c, i) { if (x >= centers[i] - 6) c.classList.add("is-in"); });
+        if (t < 1) return requestAnimationFrame(frame);
+        twinkle.style.left = x + "px";
+        twinkle.style.top = y - 2 + "px";
+        twinkle.classList.remove("is-go");
+        void twinkle.getBoundingClientRect();
+        twinkle.classList.add("is-go");
+        light.style.opacity = "0";
+        setTimeout(done, 700);
+      }
+      requestAnimationFrame(frame);
+    });
+  }
+
+  function reset() {
+    root.classList.remove("is-clearing");
+    chars.forEach(function (c) { c.classList.remove("is-in"); });
+    twinkle.classList.remove("is-go");
+  }
+
+  function leave() {
+    root.classList.add("is-done");
+    setTimeout(function () { root.hidden = true; }, 650);
+  }
+
+  var fontsReady = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+  Promise.race([fontsReady, wait(1500)]).then(async function () {
+    paint();
+    if (reduce) {
+      chars.forEach(function (c) { c.classList.add("is-in"); });
+      await wait(800);
+      return leave();
+    }
+    for (var round = 0; round < 3; round++) {
+      reset();
+      await wait(200);
+      await sweep();
+      await wait(round === 0 ? 350 : 250);
+      if (loaded) break;
+      root.classList.add("is-clearing");
+      await wait(350);
+    }
+    leave();
+  });
+})();0:{"P":null,"b":"Sdkntku7TVc9CWiLl7GHo","p":"","c":["","work","prayatna"],"i":false,"f":[[["",{"children":["work",{"children":[["slug","prayatna","d"],{"children":["__PAGE__",{}]}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/5245ab1f73a83614.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","className":"__variable_7f4526 __variable_16eff0","children":["$","body",null,{"children":[[["$","div",null,{"id":"pg-loader","className":"loader","aria-hidden":"true","suppressHydrationWarning":true,"children":[["$","div",null,{"className":"loader__glow"}],["$","div",null,{"className":"loader__mark","children":[["$","p",null,{"className":"loader__name","children":[["$","span","0",{"className":"loader__ch","suppressHydrationWarning":true,"children":"P"}],["$","span","1",{"className":"loader__ch","suppressHydrationWarning":true,"children":"i"}],["$","span","2",{"className":"loader__ch","suppressHydrationWarning":true,"children":"n"}],["$","span","3",{"className":"loader__ch","suppressHydrationWarning":true,"children":"k"}],["$","span","4",{"className":"loader__ch","suppressHydrationWarning":true,"children":"y"}],["$","span","5",{"className":"loader__ch loader__ch--space","suppressHydrationWarning":true,"children":" "}],["$","span","6",{"className":"loader__ch","suppressHydrationWarning":true,"children":"G"}],["$","span","7",{"className":"loader__ch","suppressHydrationWarning":true,"children":"o"}],["$","span","8",{"className":"loader__ch","suppressHydrationWarning":true,"children":"h"}],["$","span","9",{"className":"loader__ch","suppressHydrationWarning":true,"children":"i"}],["$","span","10",{"className":"loader__ch","suppressHydrationWarning":true,"children":"l"}]]}],["$","span",null,{"className":"loader__light","suppressHydrationWarning":true}],["$","svg",null,{"className":"loader__twinkle","viewBox":"0 0 26 26","suppressHydrationWarning":true,"children":[["$","defs",null,{"children":["$","linearGradient",null,{"id":"loader-tw","x1":"0","y1":"0","x2":"1","y2":"1","children":[["$","stop",null,{"offset":"0","stopColor":"#3d63ff"}],["$","stop",null,{"offset":"0.5","stopColor":"#a26bff"}],["$","stop",null,{"offset":"1","stopColor":"#ec5fae"}]]}]}],["$","path",null,{"fill":"url(#loader-tw)","d":"M13 0 C13.9 8.2 17.8 12.1 26 13 C17.8 13.9 13.9 17.8 13 26 C12.1 17.8 8.2 13.9 0 13 C8.2 12.1 12.1 8.2 13 0 Z"}]]}]]}]]}],["$","noscript",null,{"children":["$","style",null,{"children":"#pg-loader{display:none}"}]}],["$","script",null,{"dangerouslySetInnerHTML":{"__html":"$2"}}]],"$L3","$L4","$L5","$L6",false]}]}]]}],{"children":["work","$L7",{"children":[["slug","prayatna","d"],"$L8",{"children":["__PAGE__","$L9",{},null,false]},null,false]},null,false]},null,false],"$La",false]],"m":"$undefined","G":["$b",[]],"s":false,"S":true}
+c:I[340,["619","static/chunks/619-9168df9c2a29b74b.js","177","static/chunks/app/layout-151059ae1ff36098.js"],"Header"]
+d:I[9766,[],""]
+e:I[8924,[],""]
+f:I[2619,["356","static/chunks/356-a59ce54394773204.js","619","static/chunks/619-9168df9c2a29b74b.js","774","static/chunks/app/work/%5Bslug%5D/page-d8ae172187f8e3a5.js"],""]
+10:I[7073,["356","static/chunks/356-a59ce54394773204.js","619","static/chunks/619-9168df9c2a29b74b.js","774","static/chunks/app/work/%5Bslug%5D/page-d8ae172187f8e3a5.js"],"Glow"]
+12:I[4431,[],"OutletBoundary"]
+14:I[5278,[],"AsyncMetadataOutlet"]
+16:I[4431,[],"ViewportBoundary"]
+18:I[4431,[],"MetadataBoundary"]
+19:"$Sreact.suspense"
+3:["$","a",null,{"href":"#main","className":"skip-link","children":"Skip to content"}]
+4:["$","$Lc",null,{}]
+5:["$","main",null,{"id":"main","children":["$","$Ld",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$Le",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","section",null,{"className":"not-found container page-top","children":[["$","h1",null,{"className":"not-found__title","children":"404"}],["$","p",null,{"className":"not-found__text","children":"This page doesn't exist. The work is a click away."}],["$","div",null,{"className":"not-found__actions","children":[["$","$Lf",null,{"href":"/work","className":"roll","children":["$","span",null,{"className":"roll__track","children":[["$","span",null,{"className":"roll__label","children":"See the work"}],["$","span",null,{"className":"roll__label","aria-hidden":"true","children":"See the work"}]]}]}],["$","$Lf",null,{"href":"/","className":"text-link","children":"Back to home"}]]}]]}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]
+6:["$","footer",null,{"className":"footer section--space","id":"contact","children":[["$","div",null,{"className":"space-sky","aria-hidden":"true"}],["$","$L10",null,{"tone":"night"}],["$","div",null,{"className":"container","children":[["$","div",null,{"className":"footer__cta","children":[["$","p",null,{"className":"eyebrow","children":[["$","span",null,{"className":"eyebrow__dot eyebrow__dot--live","aria-hidden":"true"}],"Open to work."]}],["$","h2",null,{"className":"footer__title","children":["$","a",null,{"href":"mailto:pinkygohil05@gmail.com","children":"Let's talk"}]}],["$","div",null,{"className":"footer__actions","children":[["$","a",null,{"href":"mailto:pinkygohil05@gmail.com","className":"roll roll--light","target":"$undefined","rel":"noreferrer","children":["$","span",null,{"className":"roll__track","children":[["$","span",null,{"className":"roll__label","children":"Email me"}],["$","span",null,{"className":"roll__label","aria-hidden":"true","children":"Email me"}]]}]}],["$","a",null,{"href":"/Pinky-Gohil-CV.pdf","className":"roll roll--ghost footer__ghost","target":"$undefined","rel":"noreferrer","children":["$","span",null,{"className":"roll__track","children":[["$","span",null,{"className":"roll__label","children":"Download CV"}],["$","span",null,{"className":"roll__label","aria-hidden":"true","children":"Download CV"}]]}]}]]}]]}],["$","div",null,{"className":"footer__grid","children":[["$","div",null,{"className":"footer__id","children":[["$","p",null,{"className":"footer__name","children":"Pinky Gohil"}],["$","p",null,{"className":"footer__role","children":["Associate Principal of Design",", ","NeenOpal",["$","br",null,{}],"Pune, India"]}]]}],["$","nav",null,{"aria-label":"Footer","children":[["$","p",null,{"className":"footer__head","children":"Pages"}],["$","ul",null,{"className":"footer__list","children":[["$","li","/work",{"children":["$","$Lf",null,{"href":"/work","className":"$undefined","children":"Work"}]}],["$","li","/about",{"children":["$","$Lf",null,{"href":"/about","className":"$undefined","children":"About"}]}],["$","li","/workshops",{"children":["$","$Lf",null,{"href":"/workshops","className":"$undefined","children":"Workshops & talks"}]}],["$","li","/gallery",{"children":["$","$Lf",null,{"href":"/gallery","className":"$undefined","children":"Gallery"}]}],["$","li","https://pinkygohil.github.io/ai-lab",{"children":["$","a",null,{"href":"https://pinkygohil.github.io/ai-lab","className":"$undefined","target":"_blank","rel":"noreferrer","children":["AI Lab",["$","span",null,{"className":"nav-ext","aria-hidden":"true","children":"↗"}],["$","span",null,{"className":"visually-hidden","children":" (opens in a new tab)"}]]}]}]]}]]}],["$","div",null,{"children":[["$","p",null,{"className":"footer__head","children":"Contact"}],["$","ul",null,{"className":"footer__contact","children":[["$","li",null,{"children":["$","a",null,{"href":"mailto:pinkygohil05@gmail.com","className":"footer__icon-link","children":[["$","span",null,{"className":"footer__icon","aria-hidden":"true","children":["$","svg",null,{"width":"18","height":"18","viewBox":"0 0 24 24","fill":"none","children":[["$","rect",null,{"x":"3","y":"5","width":"18","height":"14","rx":"2.5","stroke":"currentColor","strokeWidth":"1.7"}],["$","path",null,{"d":"m4 7 8 6 8-6","stroke":"currentColor","strokeWidth":"1.7","strokeLinejoin":"round"}]]}]}],"pinkygohil05@gmail.com"]}]}],[["$","li","https://www.linkedin.com/in/pinkygohil2505/",{"children":["$","a",null,{"href":"https://www.linkedin.com/in/pinkygohil2505/","target":"_blank","rel":"noreferrer","className":"footer__icon-link","children":[["$","span",null,{"className":"footer__icon","aria-hidden":"true","children":["$","svg",null,{"width":"18","height":"18","viewBox":"0 0 24 24","fill":"none","children":[["$","rect",null,{"x":"3","y":"3","width":"18","height":"18","rx":"4","stroke":"currentColor","strokeWidth":"1.7"}],["$","circle",null,{"cx":"12","cy":"10","r":"3","stroke":"currentColor","strokeWidth":"1.7"}],["$","path",null,{"d":"M6.5 18c1.2-2.4 3.1-3.5 5.5-3.5s4.3 1.1 5.5 3.5","stroke":"currentColor","strokeWidth":"1.7","strokeLinecap":"round"}]]}]}],"LinkedIn"]}]}]]]}]]}]]}],["$","p",null,{"className":"footer__legal","children":["© ",2026," ","Pinky Gohil",". Some details are left out for confidentiality; figures are indicative."]}]]}]]}]
+7:["$","$1","c",{"children":[null,["$","$Ld",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$Le",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}]
+8:["$","$1","c",{"children":[null,["$","$Ld",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$Le",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}]
+9:["$","$1","c",{"children":["$L11",null,["$","$L12",null,{"children":["$L13",["$","$L14",null,{"promise":"$@15"}]]}]]}]
+a:["$","$1","h",{"children":[null,[["$","$L16",null,{"children":"$L17"}],["$","meta",null,{"name":"next-size-adjust","content":""}]],["$","$L18",null,{"children":["$","div",null,{"hidden":true,"children":["$","$19",null,{"fallback":null,"children":"$L1a"}]}]}]]}]
+1b:I[1356,["356","static/chunks/356-a59ce54394773204.js","619","static/chunks/619-9168df9c2a29b74b.js","774","static/chunks/app/work/%5Bslug%5D/page-d8ae172187f8e3a5.js"],"Image"]
+1c:I[4697,["356","static/chunks/356-a59ce54394773204.js","619","static/chunks/619-9168df9c2a29b74b.js","774","static/chunks/app/work/%5Bslug%5D/page-d8ae172187f8e3a5.js"],"Outline"]
+11:["$","article",null,{"className":"case","children":[["$","div",null,{"className":"glow-zone","children":[["$","$L10",null,{}],["$","header",null,{"className":"case__head container page-top","children":[["$","$Lf",null,{"href":"/work","className":"case__back","children":[["$","svg",null,{"width":"16","height":"16","viewBox":"0 0 24 24","fill":"none","aria-hidden":"true","children":["$","path",null,{"d":"M15 6 9 12l6 6","stroke":"currentColor","strokeWidth":"2","strokeLinecap":"round"}]}],"All work"]}],["$","p",null,{"className":"case__company","children":["Cafe Dil (Dignity in Life), Prayatna Pune",["$","span",null,{"children":[3," min read"]}]]}],["$","h1",null,{"className":"case__title","children":"Designing an inclusive identity and communication system for Cafe Dil"}],["$","div",null,{"className":"case__intro","children":[["$","dl",null,{"className":"case__facts","children":[["$","div","Role",{"className":"case__fact","children":[["$","dt",null,{"children":"Role"}],["$","dd",null,{"children":"Volunteer Design Consultant"}]]}],["$","div","Company",{"className":"case__fact","children":[["$","dt",null,{"children":"Company"}],["$","dd",null,{"children":"Cafe Dil (Dignity in Life), Prayatna Pune"}]]}],["$","div","Timeline",{"className":"case__fact","children":[["$","dt",null,{"children":"Timeline"}],["$","dd",null,{"children":"2026"}]]}],["$","div","Owned",{"className":"case__fact","children":[["$","dt",null,{"children":"Owned"}],["$","dd",null,{"children":"Identity, menus and signage, staff communication aids, and launch film"}]]}]]}],["$","section",null,{"className":"glance","aria-labelledby":"glance-title","children":[["$","p",null,{"id":"glance-title","className":"eyebrow glance__label","children":[["$","span",null,{"className":"eyebrow__dot","aria-hidden":"true"}],"Summary"]}],["$","p",null,{"className":"glance__overview","children":"Cafe Dil needed to work for two audiences: customers visiting the cafe and the adults with disabilities running it. I brought the identity, menus, signage, staff picture aids, and launch film together under one visual direction, while adapting each communication to the people using it. The identity incorporated artwork by Prayatna's students, and the staff materials built on the picture-based format they were already familiar with. Cafe Dil is now open, with the picture menus used as part of the staff's daily routine."}],["$","dl",null,{"className":"glance__stats","children":[["$","div","20",{"children":[["$","dd",null,{"children":"20"}],["$","dt",null,{"children":"baristas supported by the picture menus"}]]}],["$","div","30",{"children":[["$","dd",null,{"children":"30"}],["$","dt",null,{"children":"cafe visitors a day, on average"}]]}]]}]]}]]}]]}]]}],["$","div",null,{"className":"container","children":["$","div",null,{"className":"media case__cover","style":{"aspectRatio":"2"},"children":["$","$L1b",null,{"src":"/images/work/prayatna/cover.png","alt":"Cafe Dil (Dignity in Life), Prayatna Pune cover","fill":true,"sizes":"100vw","priority":true,"quality":90}]}]}],["$","div",null,{"className":"case__layout container","children":[["$","aside",null,{"className":"case__aside","children":[["$","$L1c",null,{"items":[{"id":"the-design-problem","text":"The design problem"},{"id":"what-i-owned","text":"What I owned"},{"id":"the-identity","text":"The identity"},{"id":"for-customers","text":"For customers"},{"id":"for-the-staff","text":"For the staff"},{"id":"the-launch-film","text":"The launch film"},{"id":"where-it-landed","text":"Where it landed"}]}],false]}],["$","div",null,{"className":"prose","children":[["$","h2","0",{"id":"the-design-problem","className":"prose__h2","children":"The design problem"}],["$","p","1",{"children":[["$","$1","0",{"children":"Cafe Dil, short for Dignity in Life, is a cafe run by Swayam, a program under Prayatna."}]]}],["$","p","2",{"children":[["$","$1","0",{"children":"It had to work like any other cafe. People walk in wanting coffee, and nothing about the experience should ask them to adjust their expectations."}]]}],["$","p","3",{"children":[["$","$1","0",{"children":"It also had to work as a workplace for staff who have learned through pictures since they were young. These were two design problems sharing one identity, and almost every decision came down to which audience a given piece was for."}]]}],["$","h2","4",{"id":"what-i-owned","className":"prose__h2","children":"What I owned"}],"$L1d","$L1e","$L1f","$L20","$L21","$L22","$L23","$L24","$L25","$L26","$L27","$L28","$L29","$L2a","$L2b","$L2c","$L2d","$L2e","$L2f","$L30"]}]]}],"$L31"]}]
+1d:["$","p","5",{"children":[["$","$1","0",{"children":"I designed the identity, menus, signage, cafe banner, staff picture aids, and launch film. I worked directly with Prayatna's founder-trustees throughout, designing within the colors and visual direction they had in mind for the cafe."}]]}]
+1e:["$","p","6",{"children":[["$","$1","0",{"children":"My role was to make one identity work across the customer experience, the staff's daily routines, and the launch."}]]}]
+1f:["$","h2","7",{"id":"the-identity","className":"prose__h2","children":"The identity"}]
+20:["$","p","8",{"children":[["$","$1","0",{"children":"I incorporated artwork by Prayatna's students into the logo, giving the identity a personal connection to the people at the heart of the cafe."}]]}]
+21:["$","p","9",{"children":[["$","$1","0",{"children":"The challenge was making the artwork work as a practical logo: at small sizes, in a single color, and on a banner that could be read from across the street."}]]}]
+22:["$","figure","10",{"className":"prose__figure","children":[["$","div",null,{"className":"media","style":{"aspectRatio":"1.7777777777777777"},"children":["$","$L1b",null,{"src":"/images/work/prayatna/01.png","alt":"The students' finger-painted heart and the logo built from it, with their paint forming the butterfly's wings and the heart retained on the \"i\"","fill":true,"sizes":"(min-width: 1024px) 912px, 100vw","priority":"$undefined","quality":90}]}],["$","figcaption",null,{"children":"The students' finger-painted heart and the logo built from it, with their paint forming the butterfly's wings and the heart retained on the \"i\""}]]}]
+23:["$","figure","11",{"className":"prose__figure","children":[["$","div",null,{"className":"media","style":{"aspectRatio":"2.038216560509554"},"children":["$","$L1b",null,{"src":"/images/work/prayatna/02.png","alt":"The identity across applications: the banner, embroidered caps, a single-color sign for the counter, and the launch standee","fill":true,"sizes":"(min-width: 1024px) 912px, 100vw","priority":"$undefined","quality":90}]}],["$","figcaption",null,{"children":"The identity across applications: the banner, embroidered caps, a single-color sign for the counter, and the launch standee"}]]}]
+24:["$","h2","12",{"id":"for-customers","className":"prose__h2","children":"For customers"}]
+25:["$","p","13",{"children":[["$","$1","0",{"children":"The customer-facing menus, signage, and banner needed to make the cafe look and feel welcoming, while keeping it easy to recognize and navigate."}]]}]
+26:["$","figure","14",{"className":"prose__figure","children":[["$","div",null,{"className":"media","style":{"aspectRatio":"1.7997750281214848"},"children":["$","$L1b",null,{"src":"/images/work/prayatna/03.png","alt":"The cafe frontage, with founder-trustees Mridula and Radiya","fill":true,"sizes":"(min-width: 1024px) 912px, 100vw","priority":"$undefined","quality":90}]}],["$","figcaption",null,{"children":"The cafe frontage, with founder-trustees Mridula and Radiya"}]]}]
+27:["$","h2","15",{"id":"for-the-staff","className":"prose__h2","children":"For the staff"}]
+28:["$","p","16",{"children":[["$","$1","0",{"children":"The staff at Prayatna have used picture aids as a learning tool since they were young. The idea of a picture-aid menu came from the founder-trustees, Mridula and Radiya: rather than introduce a new system, the staff's menu would build on the format they already knew. My job was to design it."}]]}]
+29:["$","p","17",{"children":[["$","$1","0",{"children":"I created a picture-based version of the menu using photographs of each item, with color coding to distinguish vegetarian and non-vegetarian food, as well as hot and cold drinks. The aim was to create a menu in line with how the staff already learn and communicate."}]]}]
+2a:["$","figure","18",{"className":"prose__figure","children":[["$","div",null,{"className":"media","style":{"aspectRatio":"1.6"},"children":["$","$L1b",null,{"src":"/images/work/prayatna/04.png","alt":"Two versions of the same menu: the customer-facing menu and the baristas' picture aids, using a shared color-coding system","fill":true,"sizes":"(min-width: 1024px) 912px, 100vw","priority":"$undefined","quality":90}]}],["$","figcaption",null,{"children":"Two versions of the same menu: the customer-facing menu and the baristas' picture aids, using a shared color-coding system"}]]}]
+2b:["$","h2","19",{"id":"the-launch-film","className":"prose__h2","children":"The launch film"}]
+2c:["$","p","20",{"children":[["$","$1","0",{"children":"The identity also needed to extend beyond the cafe itself. I directed, shot, and edited the launch film to introduce Cafe Dil and the people behind it."}]]}]
+2d:["$","figure","21",{"className":"prose__figure prose__video","children":[["$","video",null,{"controls":true,"playsInline":true,"preload":"none","poster":"/videos/cafe-dil-launch.jpg","aria-label":"The launch film, directed, shot, and edited for the opening","children":["$","source",null,{"src":"/videos/cafe-dil-launch.mp4","type":"video/mp4"}]}],["$","figcaption",null,{"children":["The launch film, directed, shot, and edited for the opening","$undefined"]}]]}]
+2e:["$","p","22",{"children":[["$","$1","0",{"children":"My other films for Prayatna are in the "}],["$","$Lf","1",{"href":"/gallery","className":"text-link","children":"gallery"}],["$","$1","2",{"children":"."}]]}]
+2f:["$","h2","23",{"id":"where-it-landed","className":"prose__h2","children":"Where it landed"}]
+30:["$","p","24",{"children":[["$","$1","0",{"children":"Cafe Dil is open and running, with around 30 visitors a day. The picture menus are part of the daily routine for its 20 or so baristas, built around a format they were already familiar with."}]]}]
+31:["$","nav",null,{"className":"case__next container accent-zone","aria-label":"Next case study","children":[["$","span",null,{"className":"accent-glow accent-glow--left","style":{"--accent-top":"-30%"},"aria-hidden":"true"}],["$","$Lf",null,{"href":"/work/mokkup","className":"next","children":[["$","span",null,{"className":"next__label","children":"Next case study"}],["$","span",null,{"className":"next__title","children":"Mokkup.ai"}],["$","span",null,{"className":"next__summary","children":"Designing a wireframing tool for people who don't wireframe"}]]}]]}]
+17:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}],["$","meta","2",{"name":"theme-color","content":"#ffffff"}]]
+13:null
+32:I[622,[],"IconMark"]
+15:{"metadata":[["$","title","0",{"children":"Cafe Dil (Dignity in Life), Prayatna Pune: Designing an inclusive identity and communication system for Cafe Dil · Pinky Gohil"}],["$","meta","1",{"name":"description","content":"Created the identity and launch materials for Cafe Dil, including menus and signage for customers, and picture-based menus for the adults with disabilities who run the cafe."}],["$","meta","2",{"property":"og:title","content":"Designing an inclusive identity and communication system for Cafe Dil"}],["$","meta","3",{"property":"og:description","content":"Created the identity and launch materials for Cafe Dil, including menus and signage for customers, and picture-based menus for the adults with disabilities who run the cafe."}],["$","meta","4",{"property":"og:image","content":"https://pinkygohil.work/images/work/prayatna/cover.png"}],["$","meta","5",{"name":"twitter:card","content":"summary_large_image"}],["$","meta","6",{"name":"twitter:title","content":"Designing an inclusive identity and communication system for Cafe Dil"}],["$","meta","7",{"name":"twitter:description","content":"Created the identity and launch materials for Cafe Dil, including menus and signage for customers, and picture-based menus for the adults with disabilities who run the cafe."}],["$","meta","8",{"name":"twitter:image:type","content":"image/jpeg"}],["$","meta","9",{"name":"twitter:image:width","content":"1200"}],["$","meta","10",{"name":"twitter:image:height","content":"630"}],["$","meta","11",{"name":"twitter:image:alt","content":"Pinky Gohil, design leader: I build design teams and the products they ship.\n"}],["$","meta","12",{"name":"twitter:image","content":"https://pinkygohil.work/twitter-image.jpg?4371cc9f3aacae15"}],["$","link","13",{"rel":"icon","href":"/icon.png?6fa09b96e2917589","type":"image/png","sizes":"192x192"}],["$","link","14",{"rel":"apple-touch-icon","href":"/apple-icon.png?e3cf1a2ae6322e36","type":"image/png","sizes":"180x180"}],["$","$L32","15",{}]],"error":null,"digest":"$undefined"}
+1a:"$15:metadata"

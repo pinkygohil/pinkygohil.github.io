@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="robots" content="noindex">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Building a trade-show booth with Claude · Pinky Gohil</title>
+<meta name="description" content="A step-by-step look at how I designed and built an interactive 3D model of NeenOpal's ALTA ONE 2026 exhibit stand with Claude, and how the real booth turned out.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* tokens match pinkygohil.work */
+  :root{
+    --paper:#fff; --wash:#f2f2ef; --wash2:#e9e9e5; --ink:#0b1026; --body:#3a3e52; --mute:#5f6375; --line:#e3e3df;
+    --blue:#3d63ff; --violet:#a26bff; --violet-ink:#7340e6; --amber:#ffb23f; --ok:#22c55e;
+    --space:#070b1c; --space2:#151d4a;
+    --display:"Geist","Helvetica Neue",Arial,sans-serif; --text:"Instrument Sans","Helvetica Neue",Arial,sans-serif;
+    --r-panel:32px; --r-card:20px; --r-tile:14px; --r-pill:999px;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.6 var(--text);-webkit-font-smoothing:antialiased}
+  a{color:var(--violet-ink)}
+  .wrap{max-width:1440px;margin:0 auto;padding:0 clamp(16px,3.4vw,48px)}
+
+  /* soft space-colored wash, as on the portfolio hero */
+  body::before{content:"";position:absolute;top:0;right:0;width:70vw;height:760px;z-index:-1;pointer-events:none;
+    background:radial-gradient(60% 60% at 75% 25%,rgba(162,107,255,.22),transparent 70%),radial-gradient(40% 45% at 95% 55%,rgba(61,99,255,.12),transparent 70%)}
+
+  header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.8);backdrop-filter:blur(12px)}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  header .who{font:600 17px var(--display);letter-spacing:-.01em}
+  header .who span{color:var(--mute);font-weight:400}
+  header nav a{color:var(--body);text-decoration:none;margin-left:6px;font-size:15px;padding:7px 14px;border-radius:var(--r-pill);transition:background .2s}
+  header nav a:hover{background:var(--wash);color:var(--ink)}
+
+  .hero{padding:56px 0 40px}
+  .eyebrow{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);font-weight:500;display:flex;align-items:center;gap:8px}
+  .eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(34,197,94,.18)}
+  h1{font:600 clamp(2.6rem,6vw,5.2rem)/.98 var(--display);letter-spacing:-.055em;margin:18px 0 22px;max-width:1000px;color:var(--ink)}
+  .lede{color:var(--body);max-width:760px;margin:0;font-size:clamp(1.1rem,1.5vw,1.3rem);line-height:1.55}
+  .facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+  .facts span{font-size:13.5px;border:1px solid var(--ink);border-radius:var(--r-pill);padding:6px 16px;color:var(--ink);background:transparent}
+  .facts span:first-child{background:var(--ink);color:#fff}
+
+  .split{display:grid;grid-template-columns:minmax(420px,520px) 1fr;gap:24px;align-items:stretch;height:calc(100vh - 96px);min-height:640px;max-height:980px;margin-bottom:40px;scroll-margin-top:80px}
+  .chat{background:var(--wash);border-radius:var(--r-panel);overflow:hidden;display:flex;flex-direction:column;min-height:0}
+  .chat-head{display:flex;align-items:center;gap:10px;padding:14px 20px;background:rgba(242,242,239,.96);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);flex:none}
+  .dots{display:flex;gap:6px}.dots i{width:9px;height:9px;border-radius:50%;background:var(--wash2);display:block;border:1px solid #d6d6d1}
+  .chat-head b{font:600 14px var(--display)}
+  .chat-head small{color:var(--mute);margin-left:auto;font-size:12.5px}
+  .thread{padding:24px 18px 10px;flex:1;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#cfcfca transparent}
+
+  .step{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);
+    display:flex;align-items:center;gap:10px;margin:28px 0 14px}
+  .step:first-child{margin-top:0}
+  .step::before,.step::after{content:"";height:1px;background:var(--line);flex:1}
+  .step b{color:var(--violet-ink);font-family:var(--display)}
+
+  .msg{display:flex;gap:10px;margin:0 0 14px;opacity:0;transform:translateY(10px);transition:.6s var(--ease)}
+  .msg.in{opacity:1;transform:none}
+  .av{flex:0 0 32px;height:32px;border-radius:50%;display:grid;place-items:center;font:600 12px var(--display)}
+  .me .av{background:var(--ink);color:#fff}
+  .ai .av{background:linear-gradient(115deg,var(--blue),var(--violet));color:#fff}
+  .bub{background:#fff;border-radius:6px var(--r-card) var(--r-card) var(--r-card);padding:12px 16px;max-width:100%;min-width:0;font-size:15.5px;color:var(--body);box-shadow:0 1px 0 rgba(11,16,38,.04)}
+  .me .bub{background:var(--ink);color:#e8eaf5;border-radius:var(--r-card) 6px var(--r-card) var(--r-card)}
+  .who2{font:600 12px var(--display);color:var(--mute);margin-bottom:3px;letter-spacing:.02em}
+  .me .who2{color:#9aa0c0}
+  .bub p{margin:0 0 8px}.bub p:last-child{margin-bottom:0}
+  .bub b{color:var(--ink)}.me .bub b{color:#fff}
+  .me .bub a{color:#cdbcff}
+  .bub ul{margin:6px 0;padding-left:18px}
+  .bub code{background:var(--wash);border-radius:6px;padding:1px 6px;font-size:13px;color:var(--ink)}
+  .me .bub code{background:rgba(255,255,255,.12);color:#fff}
+  .note{border-left:3px solid var(--amber);background:rgba(255,178,63,.12);padding:9px 14px;border-radius:0 var(--r-tile) var(--r-tile) 0;margin:10px 0;font-size:14.5px}
+  .good{border-left-color:var(--ok);background:rgba(34,197,94,.1)}
+  .chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .chip{font:500 13px var(--text);color:var(--ink);background:#fff;border:1px solid var(--ink);border-radius:var(--r-pill);padding:5px 14px;cursor:pointer;transition:.2s}
+  .chip:hover{background:var(--ink);color:#fff}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;margin:10px 0;border-radius:var(--r-tile);overflow:hidden}
+  th,td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left}
+  th{background:var(--wash);color:var(--mute);font-weight:600}
+  .quote{font-style:italic;color:var(--ink);border-left:3px solid var(--violet);padding-left:12px;margin:10px 0;font-size:15px}
+  .foot{flex:none;padding:16px 20px;border-top:1px solid var(--line);color:var(--mute);font-size:13px;background:var(--wash)}
+
+  .stage{height:100%;min-height:0}
+  .stage-card{background:var(--space);border-radius:var(--r-panel);overflow:hidden;isolation:isolate;height:100%;display:flex;flex-direction:column;box-shadow:0 30px 60px -30px rgba(61,99,255,.35)}
+  .stage-bar{flex:none;display:flex;align-items:center;gap:8px;padding:12px 18px;background:linear-gradient(115deg,var(--space2),var(--space));flex-wrap:wrap}
+  .stage-bar b{font:600 14px var(--display);margin-right:auto;color:#fff}
+  .stage-bar button,.stage-bar a{font:500 12.5px var(--text);color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:var(--r-pill);padding:5px 14px;cursor:pointer;text-decoration:none;transition:.2s}
+  .stage-bar button:hover,.stage-bar a:hover{background:#fff;color:var(--space)}
+  iframe{display:block;width:100%;flex:1;min-height:0;border:0;background:var(--space)}
+  .tabs{display:none}
+
+  /* page switcher: one tab per AI project */
+  header nav{display:flex;align-items:center;gap:4px}
+  header nav a{margin-left:0}
+  header nav a[aria-current="page"]{background:var(--ink);color:#fff}
+  header nav a[aria-current="page"]:hover{background:var(--ink);color:#fff}
+
+  section.block{padding:72px 0 40px;border-top:1px solid var(--line)}
+  h2{font:600 clamp(2rem,4vw,3.4rem)/1.02 var(--display);letter-spacing:-.045em;margin:14px 0 14px}
+  .sub{color:var(--body);max-width:720px;margin:0 0 30px}
+  .gallery{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+  .ph{position:relative;border-radius:var(--r-card);overflow:hidden;background:var(--wash);margin:0;grid-column:span 4;aspect-ratio:3/4}
+  .ph.wide{grid-column:span 8;aspect-ratio:16/10}
+  .ph img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;transition:transform .6s var(--ease)}
+  .ph:hover img{transform:scale(1.03)}
+  .ph figcaption{position:absolute;left:12px;bottom:12px;padding:5px 14px;font-size:13px;background:rgba(255,255,255,.92);color:var(--ink);border-radius:var(--r-pill);pointer-events:none}
+  .ph.missing{display:grid;place-items:center;text-align:center;color:var(--mute);font-size:14px;padding:20px;
+    background:linear-gradient(135deg,var(--wash),#ebe7f7)}
+  .ph.missing code{background:#fff;border-radius:6px;padding:1px 8px}
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;max-width:920px}
+  .compare .ph{grid-column:auto}
+  .cmp-title{font:600 clamp(1.4rem,2.4vw,1.9rem)/1.1 var(--display);letter-spacing:-.03em;margin:56px 0 10px}
+  .takeaways{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:10px}
+  .card{background:var(--wash);border-radius:var(--r-card);padding:22px}
+  .card h3{margin:0 0 8px;font:600 1.15rem var(--display);letter-spacing:-.02em}.card p{margin:0;color:var(--body);font-size:15px}
+  footer{border-top:1px solid var(--line);padding:30px 0 48px;color:var(--mute);font-size:14px}
+  #lb{position:fixed;inset:0;background:rgba(7,11,28,.92);display:none;place-items:center;z-index:50;cursor:zoom-out}
+  #lb img{max-width:94vw;max-height:92vh;border-radius:var(--r-card)}
+  #lb.on{display:grid}
+
+  @media (max-width:1000px){
+    .split{grid-template-columns:1fr}
+    .tabs{display:flex;gap:8px;margin-bottom:14px}
+    .tabs button{flex:1;font:500 15px var(--text);color:var(--ink);background:#fff;border:1px solid var(--ink);border-radius:var(--r-pill);padding:10px}
+    .tabs button.on{background:var(--ink);color:#fff}
+    body.show-booth .chat{display:none}
+    body:not(.show-booth) .stage{display:none}
+    .split{height:auto;max-height:none;min-height:0}
+    .chat{height:calc(100vh - 210px);min-height:480px}
+    .stage{height:auto}
+    .stage-card{height:auto;display:block}
+    iframe{height:70vh;flex:none}
+    .ph,.ph.wide{grid-column:span 12}
+    .compare{grid-template-columns:1fr}
+    header .who span,header nav .out{display:none}
+    header nav a{font-size:13.5px;padding:6px 12px}
+  }
+  @media (prefers-reduced-motion:reduce){.msg{transition:none;opacity:1;transform:none}html{scroll-behavior:auto}.ph img{transition:none}}
+
+  /* phones: the name gives way so the project tabs fit on one line */
+  @media (max-width:600px){
+    header .who{display:none}
+    header nav{width:100%;justify-content:space-between;gap:2px}
+    header nav a{padding:6px 10px;font-size:13px;white-space:nowrap}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="who">Pinky Gohil <span>· AI projects</span></div>
+    <nav aria-label="AI projects"><a href="/ai-lab/" aria-current="page">Booth model</a><a href="/ai-lab/knowledge-base">Knowledge base</a><a href="/ai-lab/unfold-thread">Unfold Thread</a><a class="out" href="https://pinkygohil.github.io">Portfolio ↗</a></nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Case study · Working with Claude</div>
+    <h1>From a spec sheet to a walkable 3D exhibit stand, in conversation</h1>
+    <p class="lede">NeenOpal's booth at ALTA ONE 2026 was a rented 10′ × 10′ Freeman exhibit. Before a single graphic went to print, I wanted to see how our artwork would actually sit on it. This page shows how the interactive 3D model came together, including the wrong turns, and how the real booth looked in Scottsdale.</p>
+    <div class="facts">
+      <span>ALTA ONE 2026 · Westin Kierland, Scottsdale AZ</span>
+      <span>Freeman “Excite 1” 10′ × 10′ · #1810114</span>
+      <span>One self-contained HTML file · no external requests</span>
+      <span>Three.js</span>
+    </div>
+  </div>
+
+  <div class="tabs"><button id="tabChat" class="on">The conversation</button><button id="tabBooth">The 3D booth</button></div>
+
+  <div class="split" id="process">
+    <!-- ======================= CHAT ======================= -->
+    <div class="chat">
+      <div class="chat-head">
+        <div class="dots"><i></i><i></i><i></i></div><b>Booth model session</b>
+        <small>Aug – Oct 2026</small>
+      </div>
+      <div class="thread" id="thread">
+
+        <div class="step"><b>01</b> The brief</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>We're exhibiting at ALTA ONE with the Freeman Excite 1 10×10. I have backdrop and L-panel artwork, plus a counter and a TV. Can you build me a 3D model so I can see how it all sits in the booth before we print?</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>Yes. I'll pull the exhibit's real dimensions from the Freeman and ALTA ONE listings first, so the model is built from published numbers rather than guesses. The goal is one HTML file you can open anywhere, with your artwork mapped onto the right panels.</p></div></div>
+
+        <div class="step"><b>02</b> Facts from the listing</div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>From the ALTA ONE store listing, word for word:</p>
+          <ul>
+            <li>8′ H multidimensional backwall with a fabric mural graphic and offset L-shaped header</li>
+            <li>One <b>39″W × 19.5″D × 41″H</b> cabinet with locking door and inset graphic</li>
+            <li>Three arm spotlights; carpet with ½″ padding</li>
+          </ul>
+          <p>The Monitor options come from Encore's “Build Your Own Monitor Package”: 23″ without stand, 55″ or 80″ with floor stand. I calculated the active screen area of each from its diagonal at 16:9.</p></div></div>
+
+        <div class="step"><b>03</b> Round one: inferring the header</div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>Freeman doesn't publish the header dimensions anywhere. So I measured the transparent cutout in your backdrop PNG against an assumed 120″ × 96″ wall. The margins came out equal at about <b>20″</b>.</p>
+          <div class="note">I flagged this as a best inference, not a fact: the 120″ wall width was itself an assumption.</div></div></div>
+
+        <div class="step"><b>04</b> Round two: your sizing, and a conflict</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>The brief I was given says the backdrop is a full 10′ × 10′ and the L-panel is 1′-6″.</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>I measured your <code>LPanel.png</code>: exactly <b>18.00″</b> on both legs, so that matches. But a 10′ tall wall contradicts the listing's <b>8′ H</b>, and most shows cap inline booths at 8′.</p>
+          <div class="note">I raised the conflict rather than silently picking one. The spec sheet later settled it.</div></div></div>
+
+        <div class="step"><b>05</b> Round three: the spec sheet</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>Here's Freeman's graphic spec sheet for the 10×10.</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>This is the authoritative source, and it corrected three things. The sheet prints at 200%, so I halved the artboards. Final panels:</p>
+          <table>
+            <tr><th>Panel</th><th>Size</th><th>Substrate</th></tr>
+            <tr><td>A · wall</td><td>117″ × 93″</td><td>Fabric</td></tr>
+            <tr><td>C · top band</td><td>102″ × 15″</td><td>Ultraboard</td></tr>
+            <tr><td>D · right column</td><td>15″ × 93.3125″</td><td>Ultraboard</td></tr>
+            <tr><td>G · counter front</td><td>38.125″ × 35.75″</td><td>PVC</td></tr>
+          </table>
+          <p>Two surprises: the top band stops short of the right column, and the column runs full height instead of starting under the band. Same silhouette, different subdivision.</p>
+          <p>Lucky break: the visible window of the wall stayed <b>102″ × 78″</b> across rounds two and three, so your backdrop artwork needed no rework.</p>
+          <div class="chip-row"><button class="chip" data-act="view:front">Front view</button><button class="chip" data-act="dims">Toggle dimensions</button></div></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>Freeman's own design note applies directly to your artwork:</p>
+          <div class="quote">“Graphic Panels C and D are designed to overlap. When creating artwork for Panels C and D, please ensure all critical elements are adjusted to properly account for the overlap area.”</div>
+          <p>In practice that's the end of your tagline and the QR code, where the two panels meet 43.5″ from the left edge.</p></div></div>
+
+        <div class="step"><b>06</b> Correcting myself</div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <div class="note">One correction. I'd said the 3″ step between the wall and the header panels was “estimated from the product photography.” That overstated it. The photos show a step exists, but I never measured its depth; 3″ is a typical value for this construction.</div>
+          <p>It only changes how deep the shadow line looks in renders, never a print dimension. It's now listed as the model's one real assumption.</p></div></div>
+
+        <div class="step"><b>07</b> What the model can do</div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <ul>
+            <li>Drag the TV, counter, a 5′8″ staff figure and a 5′10″ visitor; arrow keys nudge, Q/E rotate</li>
+            <li>Collision checks use true oriented-box tests, not circles, so an angled counter warns correctly</li>
+            <li>Three monitor sizes on a floor stand or sitting on the counter, with the overhang flagged</li>
+            <li>Upload your own artwork per panel, or one 117″ × 93″ file that gets sliced into C and D without resampling</li>
+            <li>Six camera presets, a dimension overlay, carpet colours, and Save PNG</li>
+          </ul>
+          <div class="chip-row"><button class="chip" data-act="view:hero">Hero</button><button class="chip" data-act="view:top">Plan view</button><button class="chip" data-act="view:visitor">Aisle view</button></div></div></div>
+
+        <div class="step"><b>08</b> Checking the work</div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>Your artwork files matched the modelled window to within a pixel (aspect 1.3081 vs 1.3077). The L-panel cutout measures 18.03″ on both sides. I also verified the file makes <b>zero external network requests</b>, and that uploading C and D separately renders identically to slicing one full-wall file (mean pixel difference 0.19 / 255).</p></div></div>
+
+        <div class="step"><b>09</b> Design findings</div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>Putting people and furniture in the model surfaced things a flat mock-up hides:</p>
+          <ul>
+            <li><b>The 42″ rule.</b> Below roughly 42″ everything is hidden by the counter, a monitor or people standing at the stand. The usable band on a 78″ window is 42″–72″.</li>
+            <li><b>Your lowest bullet</b>, “Ask. Analyze. Act.”, sits at about 24″ and is the most likely to be blocked, and is arguably the strongest line.</li>
+            <li><b>Monitor size.</b> An 80″ on a floor stand overwhelms a 10×10 and blocks the wall from the aisle. A 23″ on the counter leaves the wall fully visible; 55″ sits between.</li>
+          </ul></div></div>
+
+        <div class="step"><b>10</b> Left open for Freeman</div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <ul>
+            <li>Confirm the true depth of the header step with Freeman's sales team</li>
+            <li>Reissue panels A, C, D and G at the spec-sheet sizes, and request Freeman's own artwork template with bleed</li>
+            <li>The ALTA listing and Freeman's NACDS sheet disagree slightly on the counter (39 × 19.5 × 41 vs 40 × 20 × 40). The listing governs this order, so that is what the model uses.</li>
+          </ul></div></div>
+
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>Perfect. Sending the final artwork to Freeman. <a href="#result">See how it came out →</a></p></div></div>
+      </div>
+      <div class="foot">The conversation is condensed and reordered from my working session; the figures, quotes and sources are exact. Full spec record available on request.</div>
+    </div>
+
+    <!-- ======================= BOOTH ======================= -->
+    <div class="stage" id="booth-live">
+      <div class="stage-card">
+        <div class="stage-bar">
+          <b>The model, live</b>
+          <button data-act="view:hero">Hero</button>
+          <button data-act="view:front">Front</button>
+          <button data-act="view:top">Plan</button>
+          <button data-act="dims">Dimensions</button>
+          <button id="fs" type="button">Full screen ⛶</button>
+        </div>
+        <iframe id="booth" src="booth.html" title="Interactive 3D model of the NeenOpal ALTA ONE 2026 booth" loading="lazy" allow="fullscreen" allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================= RESULT ======================= -->
+<section class="block" id="result">
+  <div class="wrap">
+    <div class="eyebrow">The real thing</div>
+    <h2>At ALTA ONE 2026</h2>
+    <p class="sub">Scottsdale, 12–14 October. Photos of the finished NeenOpal stand on the show floor.</p>
+    <div class="gallery" id="gallery">
+      <figure class="ph"><img src="photos/booth-hero.jpg" alt="NeenOpal booth at ALTA ONE 2026, front view" loading="lazy"><figcaption>The finished stand, front view</figcaption></figure>
+      <figure class="ph"><img src="photos/booth-detail-1.jpg" alt="NeenOpal booth at ALTA ONE 2026, straight on" loading="lazy"><figcaption>Straight on: counter, monitor and header</figcaption></figure>
+      <figure class="ph"><img src="photos/booth-team.jpg" alt="A NeenOpal team member at the booth" loading="lazy"><figcaption>The team on the floor</figcaption></figure>
+    </div>
+
+    <h3 class="cmp-title">The model next to the real thing</h3>
+    <p class="sub">Same front-on angle. The model carries the final print artwork on the backdrop, header, side column and counter. The monitor shows the Title AI Agent slide. The two figures are stand-ins.</p>
+    <div class="compare">
+      <figure class="ph"><img src="photos/compare-model.png" alt="3D model, front view" loading="lazy"><figcaption>The 3D model</figcaption></figure>
+      <figure class="ph"><img src="photos/booth-hero.jpg" alt="Real booth, front view" loading="lazy"><figcaption>The booth at ALTA ONE</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section class="block">
+  <div class="wrap">
+    <div class="eyebrow">Key takeaways</div>
+    <h2>From guessing to checking</h2>
+    <p class="sub">At NeenOpal, my team designs the booth graphics for industry events. Until recently that meant flat artwork and a guess at how it would look once printed and installed. This time we could see it first.</p>
+    <div class="takeaways">
+      <div class="card"><h3>A guessing game became something we could check</h3><p>Flat artwork can't tell you whether text will be readable, where the TV should sit, or whether visuals line up with the booth's structure. A 3D model at the booth's exact dimensions, with our graphics on the walls, can.</p></div>
+      <div class="card"><h3>No 3D skills needed</h3><p>I don't know 3D software, and learning it would have taken days. With Claude, the whole setup took under two hours.</p></div>
+      <div class="card"><h3>It changed how we designed</h3><p>We could judge how much text each wall could hold, find the right spot for the TV, and see how everything worked together as one space.</p></div>
+      <div class="card"><h3>Approval got easier</h3><p>Our founders could see exactly what they were signing off on. Once the booth was built, they told us they thought it was one of the best at the event.</p></div>
+    </div>
+    <p class="sub" style="margin:26px 0 0">It's a small thing, but it turned a guessing game into something we could check before committing to it.</p>
+  </div>
+  </div>
+</section>
+
+<footer><div class="wrap">Pinky Gohil · Associate Principal of Design, NeenOpal · <a href="https://pinkygohil.github.io">pinkygohil.work</a></div></footer>
+
+<div id="lb"><img alt=""></div>
+
+<script>
+/* reveal chat messages as they scroll in */
+(function(){
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+  }), {threshold:.12});
+  document.querySelectorAll('.msg').forEach(m => io.observe(m));
+})();
+
+/* drive the embedded booth from chat chips (same-origin only) */
+const frame = document.getElementById('booth');
+function boothDo(act){
+  if (document.body.classList.contains('show-booth') === false && matchMedia('(max-width:1000px)').matches){
+    document.body.classList.add('show-booth');
+    document.getElementById('tabBooth').classList.add('on'); document.getElementById('tabChat').classList.remove('on');
+  }
+  try{
+    const d = frame.contentDocument;
+    if (act === 'dims') d.getElementById('tDims').click();
+    else if (act.startsWith('view:')) d.querySelector('[data-view="' + act.slice(5) + '"]').click();
+  }catch(e){ /* cross-origin or not loaded: ignore */ }
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]'); if (t) boothDo(t.dataset.act);
+});
+
+/* full screen: native fullscreen on the iframe, new tab as fallback */
+document.getElementById('fs').addEventListener('click', () => {
+  const f = document.getElementById('booth');
+  const go = f.requestFullscreen || f.webkitRequestFullscreen;
+  if (go) { try { const p = go.call(f); if (p && p.catch) p.catch(() => window.open('booth.html','_blank','noopener')); return; } catch(e){} }
+  window.open('booth.html','_blank','noopener');
+});
+
+/* mobile tabs */
+document.getElementById('tabChat').onclick = () => {
+  document.body.classList.remove('show-booth');
+  tabChat.classList.add('on'); tabBooth.classList.remove('on');
+};
+document.getElementById('tabBooth').onclick = () => {
+  document.body.classList.add('show-booth');
+  tabBooth.classList.add('on'); tabChat.classList.remove('on');
+};
+
+/* gallery: placeholder if a photo hasn't been added yet, plus lightbox */
+document.querySelectorAll('.ph img').forEach(img => {
+  img.addEventListener('error', () => {
+    const f = img.closest('.ph'); f.classList.add('missing');
+    f.innerHTML = '<div>Add your photo as<br><code>' + img.getAttribute('src') + '</code></div>';
+  });
+  img.addEventListener('click', () => {
+    const lb = document.getElementById('lb'); lb.querySelector('img').src = img.src; lb.classList.add('on');
+  });
+});
+document.getElementById('lb').onclick = () => document.getElementById('lb').classList.remove('on');
+addEventListener('keydown', e => { if (e.key === 'Escape') document.getElementById('lb').classList.remove('on'); });
+</script>
+</body>
+</html>
