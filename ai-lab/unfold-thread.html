@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta name="robots" content="noindex">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Building Unfold Thread with Claude · Pinky Gohil</title>
+<meta name="description" content="How I built and launched Unfold Thread with Claude: a private Gmail extension that turns long email threads into one dated conversation, now live on the Chrome Web Store.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* tokens match pinkygohil.work */
+  :root{
+    --paper:#fff; --wash:#f2f2ef; --wash2:#e9e9e5; --ink:#0b1026; --body:#3a3e52; --mute:#5f6375; --line:#e3e3df;
+    --blue:#3d63ff; --violet:#a26bff; --violet-ink:#7340e6; --amber:#ffb23f; --ok:#22c55e;
+    --space:#070b1c; --space2:#151d4a;
+    --display:"Geist","Helvetica Neue",Arial,sans-serif; --text:"Instrument Sans","Helvetica Neue",Arial,sans-serif;
+    --r-panel:32px; --r-card:20px; --r-tile:14px; --r-pill:999px;
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.6 var(--text);-webkit-font-smoothing:antialiased}
+  a{color:var(--violet-ink)}
+  .wrap{max-width:1440px;margin:0 auto;padding:0 clamp(16px,3.4vw,48px)}
+
+  /* soft space-colored wash, as on the portfolio hero */
+  body::before{content:"";position:absolute;top:0;right:0;width:70vw;height:760px;z-index:-1;pointer-events:none;
+    background:radial-gradient(60% 60% at 75% 25%,rgba(162,107,255,.22),transparent 70%),radial-gradient(40% 45% at 95% 55%,rgba(61,99,255,.12),transparent 70%)}
+
+  header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.8);backdrop-filter:blur(12px)}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  header .who{font:600 17px var(--display);letter-spacing:-.01em}
+  header .who span{color:var(--mute);font-weight:400}
+  header nav a{color:var(--body);text-decoration:none;margin-left:6px;font-size:15px;padding:7px 14px;border-radius:var(--r-pill);transition:background .2s}
+  header nav a:hover{background:var(--wash);color:var(--ink)}
+
+  .hero{padding:56px 0 40px}
+  .eyebrow{font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);font-weight:500;display:flex;align-items:center;gap:8px}
+  .eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px rgba(34,197,94,.18)}
+  h1{font:600 clamp(2.6rem,6vw,5.2rem)/.98 var(--display);letter-spacing:-.055em;margin:18px 0 22px;max-width:1000px;color:var(--ink)}
+  .lede{color:var(--body);max-width:760px;margin:0;font-size:clamp(1.1rem,1.5vw,1.3rem);line-height:1.55}
+  .facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:26px}
+  .facts span{font-size:13.5px;border:1px solid var(--ink);border-radius:var(--r-pill);padding:6px 16px;color:var(--ink);background:transparent}
+  .facts span:first-child{background:var(--ink);color:#fff}
+
+  .split{display:grid;grid-template-columns:minmax(420px,520px) 1fr;gap:24px;align-items:stretch;height:calc(100vh - 96px);min-height:640px;max-height:980px;margin-bottom:40px;scroll-margin-top:80px}
+  .chat{background:var(--wash);border-radius:var(--r-panel);overflow:hidden;display:flex;flex-direction:column;min-height:0}
+  .chat-head{display:flex;align-items:center;gap:10px;padding:14px 20px;background:rgba(242,242,239,.96);backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);flex:none}
+  .dots{display:flex;gap:6px}.dots i{width:9px;height:9px;border-radius:50%;background:var(--wash2);display:block;border:1px solid #d6d6d1}
+  .chat-head b{font:600 14px var(--display)}
+  .chat-head small{color:var(--mute);margin-left:auto;font-size:12.5px}
+  .thread{padding:24px 18px 10px;flex:1;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#cfcfca transparent}
+
+  .step{font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);
+    display:flex;align-items:center;gap:10px;margin:28px 0 14px}
+  .step:first-child{margin-top:0}
+  .step::before,.step::after{content:"";height:1px;background:var(--line);flex:1}
+  .step b{color:var(--violet-ink);font-family:var(--display)}
+
+  .msg{display:flex;gap:10px;margin:0 0 14px;opacity:0;transform:translateY(10px);transition:.6s var(--ease)}
+  .msg.in{opacity:1;transform:none}
+  .av{flex:0 0 32px;height:32px;border-radius:50%;display:grid;place-items:center;font:600 12px var(--display)}
+  .me .av{background:var(--ink);color:#fff}
+  .ai .av{background:linear-gradient(115deg,var(--blue),var(--violet));color:#fff}
+  .bub{background:#fff;border-radius:6px var(--r-card) var(--r-card) var(--r-card);padding:12px 16px;max-width:100%;min-width:0;font-size:15.5px;color:var(--body);box-shadow:0 1px 0 rgba(11,16,38,.04)}
+  .me .bub{background:var(--ink);color:#e8eaf5;border-radius:var(--r-card) 6px var(--r-card) var(--r-card)}
+  .who2{font:600 12px var(--display);color:var(--mute);margin-bottom:3px;letter-spacing:.02em}
+  .me .who2{color:#9aa0c0}
+  .bub p{margin:0 0 8px}.bub p:last-child{margin-bottom:0}
+  .bub b{color:var(--ink)}.me .bub b{color:#fff}
+  .me .bub a{color:#cdbcff}
+  .bub ul{margin:6px 0;padding-left:18px}
+  .bub code{background:var(--wash);border-radius:6px;padding:1px 6px;font-size:13px;color:var(--ink)}
+  .me .bub code{background:rgba(255,255,255,.12);color:#fff}
+  .note{border-left:3px solid var(--amber);background:rgba(255,178,63,.12);padding:9px 14px;border-radius:0 var(--r-tile) var(--r-tile) 0;margin:10px 0;font-size:14.5px}
+  .good{border-left-color:var(--ok);background:rgba(34,197,94,.1)}
+  .chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .chip{font:500 13px var(--text);color:var(--ink);background:#fff;border:1px solid var(--ink);border-radius:var(--r-pill);padding:5px 14px;cursor:pointer;transition:.2s}
+  .chip:hover{background:var(--ink);color:#fff}
+  table{border-collapse:collapse;width:100%;font-size:13.5px;margin:10px 0;border-radius:var(--r-tile);overflow:hidden}
+  th,td{border-bottom:1px solid var(--line);padding:7px 10px;text-align:left}
+  th{background:var(--wash);color:var(--mute);font-weight:600}
+  .quote{font-style:italic;color:var(--ink);border-left:3px solid var(--violet);padding-left:12px;margin:10px 0;font-size:15px}
+  .foot{flex:none;padding:16px 20px;border-top:1px solid var(--line);color:var(--mute);font-size:13px;background:var(--wash)}
+
+  .stage{height:100%;min-height:0}
+  .stage-card{background:var(--space);border-radius:var(--r-panel);overflow:hidden;isolation:isolate;height:100%;display:flex;flex-direction:column;box-shadow:0 30px 60px -30px rgba(61,99,255,.35)}
+  .stage-bar{flex:none;display:flex;align-items:center;gap:8px;padding:12px 18px;background:linear-gradient(115deg,var(--space2),var(--space));flex-wrap:wrap}
+  .stage-bar b{font:600 14px var(--display);margin-right:auto;color:#fff}
+  .stage-bar button,.stage-bar a{font:500 12.5px var(--text);color:#fff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);border-radius:var(--r-pill);padding:5px 14px;cursor:pointer;text-decoration:none;transition:.2s}
+  .stage-bar button:hover,.stage-bar a:hover{background:#fff;color:var(--space)}
+  iframe{display:block;width:100%;flex:1;min-height:0;border:0;background:var(--space)}
+  .tabs{display:none}
+
+  /* page switcher: one tab per AI project */
+  header nav{display:flex;align-items:center;gap:4px}
+  header nav a{margin-left:0}
+  header nav a[aria-current="page"]{background:var(--ink);color:#fff}
+  header nav a[aria-current="page"]:hover{background:var(--ink);color:#fff}
+
+  section.block{padding:72px 0 40px;border-top:1px solid var(--line)}
+  h2{font:600 clamp(2rem,4vw,3.4rem)/1.02 var(--display);letter-spacing:-.045em;margin:14px 0 14px}
+  .sub{color:var(--body);max-width:720px;margin:0 0 30px}
+  .gallery{display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+  .ph{position:relative;border-radius:var(--r-card);overflow:hidden;background:var(--wash);margin:0;grid-column:span 4;aspect-ratio:3/4}
+  .ph.wide{grid-column:span 8;aspect-ratio:16/10}
+  .ph img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in;transition:transform .6s var(--ease)}
+  .ph:hover img{transform:scale(1.03)}
+  .ph figcaption{position:absolute;left:12px;bottom:12px;padding:5px 14px;font-size:13px;background:rgba(255,255,255,.92);color:var(--ink);border-radius:var(--r-pill);pointer-events:none}
+  .ph.missing{display:grid;place-items:center;text-align:center;color:var(--mute);font-size:14px;padding:20px;
+    background:linear-gradient(135deg,var(--wash),#ebe7f7)}
+  .ph.missing code{background:#fff;border-radius:6px;padding:1px 8px}
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;max-width:920px}
+  .compare .ph{grid-column:auto}
+  .cmp-title{font:600 clamp(1.4rem,2.4vw,1.9rem)/1.1 var(--display);letter-spacing:-.03em;margin:56px 0 10px}
+  .takeaways{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:10px}
+  .card{background:var(--wash);border-radius:var(--r-card);padding:22px}
+  .card h3{margin:0 0 8px;font:600 1.15rem var(--display);letter-spacing:-.02em}.card p{margin:0;color:var(--body);font-size:15px}
+  footer{border-top:1px solid var(--line);padding:30px 0 48px;color:var(--mute);font-size:14px}
+  #lb{position:fixed;inset:0;background:rgba(7,11,28,.92);display:none;place-items:center;z-index:50;cursor:zoom-out}
+  #lb img{max-width:94vw;max-height:92vh;border-radius:var(--r-card)}
+  #lb.on{display:grid}
+
+  @media (max-width:1000px){
+    .split{grid-template-columns:1fr}
+    .tabs{display:flex;gap:8px;margin-bottom:14px}
+    .tabs button{flex:1;font:500 15px var(--text);color:var(--ink);background:#fff;border:1px solid var(--ink);border-radius:var(--r-pill);padding:10px}
+    .tabs button.on{background:var(--ink);color:#fff}
+    body.show-booth .chat{display:none}
+    body:not(.show-booth) .stage{display:none}
+    .split{height:auto;max-height:none;min-height:0}
+    .chat{height:calc(100vh - 210px);min-height:480px}
+    .stage{height:auto}
+    .stage-card{height:auto;display:block}
+    iframe{height:70vh;flex:none}
+    .ph,.ph.wide{grid-column:span 12}
+    .compare{grid-template-columns:1fr}
+    header .who span,header nav .out{display:none}
+    header nav a{font-size:13.5px;padding:6px 12px}
+  }
+  @media (prefers-reduced-motion:reduce){.msg{transition:none;opacity:1;transform:none}html{scroll-behavior:auto}.ph img{transition:none}}
+  .stage-card.light{background:var(--wash);box-shadow:0 30px 60px -30px rgba(61,99,255,.25)}
+  .stage-card.light iframe{background:#fff}
+
+  /* Unfold Thread demo: a light stage that switches between the promo film and screenshots */
+  .stage-card.light .stage-bar{background:linear-gradient(115deg,#ece6ff,#f6f3ff)}
+  .stage-card.light .stage-bar b{color:var(--ink)}
+  .stage-card.light .stage-bar button,.stage-card.light .stage-bar a{color:var(--ink);background:#fff;border-color:rgba(11,16,38,.18)}
+  .stage-card.light .stage-bar button:hover,.stage-card.light .stage-bar a:hover,.stage-card.light .stage-bar button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .stage-card.light .stage-bar a.cta{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .stage-card.light .stage-bar a.cta:hover{background:var(--violet-ink);border-color:var(--violet-ink)}
+  .views{flex:1;min-height:0;position:relative;background:linear-gradient(160deg,#efeaff,#f7f5fc 55%,#fbeff6)}
+  .view{position:absolute;inset:0;display:grid;place-items:center;padding:clamp(14px,2.4vw,32px);opacity:0;visibility:hidden;transition:opacity .4s var(--ease)}
+  .view.on{opacity:1;visibility:visible}
+  .view video,.view img{max-width:100%;max-height:100%;width:auto;height:auto;display:block;border-radius:var(--r-tile);box-shadow:0 24px 50px -24px rgba(61,99,255,.35)}
+  .view video{width:100%;background:#fff}
+  .view figcaption{position:absolute;left:50%;bottom:14px;transform:translateX(-50%);font-size:13px;padding:5px 14px;background:rgba(255,255,255,.94);color:var(--ink);border-radius:var(--r-pill);white-space:nowrap}
+  @media (max-width:1000px){
+    .views{height:auto;aspect-ratio:auto}
+    .view{position:static;display:none;opacity:1;visibility:visible;padding:14px}
+    .view.on{display:grid}
+    .view figcaption{position:static;transform:none;margin-top:10px;justify-self:center}
+  }
+
+  /* phones: the name gives way so the project tabs fit on one line */
+  @media (max-width:600px){
+    header .who{display:none}
+    header nav{width:100%;justify-content:space-between;gap:2px}
+    header nav a{padding:6px 10px;font-size:13px;white-space:nowrap}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="who">Pinky Gohil <span>· AI projects</span></div>
+    <nav aria-label="AI projects"><a href="/ai-lab/">Booth model</a><a href="/ai-lab/knowledge-base">Knowledge base</a><a href="/ai-lab/unfold-thread" aria-current="page">Unfold Thread</a><a class="out" href="https://pinkygohil.github.io">Portfolio ↗</a></nav>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="eyebrow">Side project · Working with Claude</div>
+    <h1>From one idea to a live browser extension, in conversation</h1>
+    <p class="lede">Some email threads run for years, and Gmail makes them hard to follow. I built Unfold Thread with Claude as my build partner: a private extension that turns any Gmail thread into one dated conversation, with every attachment in one place. This page shows how it went from a single prompt to a live listing on the Chrome Web Store, with the brand, website, store assets and promo film along the way.</p>
+    <div class="facts">
+      <span>Live on Chrome and Edge</span>
+      <span>Stores and sends nothing</span>
+      <span>Chrome, Edge, Brave, Arc, Opera</span>
+      <span>unfoldthread.run</span>
+    </div>
+  </div>
+
+  <div class="tabs"><button id="tabChat" class="on">The conversation</button><button id="tabBooth">The product</button></div>
+
+  <div class="split" id="process">
+    <!-- ======================= CHAT ======================= -->
+    <div class="chat">
+      <div class="chat-head">
+        <div class="dots"><i></i><i></i><i></i></div><b>Unfold Thread session</b>
+      </div>
+      <div class="thread" id="thread">
+
+        <div class="step"><b>01</b> The idea</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>I want to build an extension for Chrome and other browsers that shows an email thread as a conversation. If a thread started on 25 May and is still going, one button should show every email in date order, with the attachments that came with them. It has to be very secure: nothing stored, it just rolls up the emails for you.</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>Here's a first working version on Manifest V3, built around privacy:</p>
+          <ul>
+            <li>It reads only the thread already on screen. No Gmail API and no sign-in.</li>
+            <li>No network requests, no browser storage, no analytics.</li>
+            <li>The conversation opens in a sealed overlay, isolated from the rest of Gmail.</li>
+            <li>Email content is rebuilt through an allowlist sanitizer, and remote tracking images are dropped.</li>
+          </ul>
+          <div class="chip-row"><button class="chip" data-act="timeline">Show the conversation view</button></div></div></div>
+
+        <div class="step"><b>02</b> Who it's for</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>Do any extensions like this already exist? I want to market it to lawyers and similar professionals who deal with threads that run for years.</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>Gmail's threading, inbox add-ons and email-to-PDF tools exist, but none of them offers a private, dated conversation with attachments in line.</p>
+          <p>For lawyers, consultants and agencies, a thread is a record. Confidential client email can't go through a third-party server, so privacy becomes the main message, not a footnote.</p></div></div>
+
+        <div class="step"><b>03</b> The first bug</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>The extension isn't working. Nothing happens when I click it.</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>It wasn't loaded into Gmail tabs that were open before you installed it. It now starts on demand when you click the toolbar icon.</p></div></div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div><p>This works fine.</p></div></div>
+
+        <div class="step"><b>04</b> Proof, filters and search</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>How do I know none of the data is being read or stored? Also, can we add a filter for people, and search?</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>I wrote an <b>audit script</b> that scans the code for network calls, storage, cookies and unsafe code. It comes back clean, and anyone can run it.</p>
+          <p>Each participant now has a chip with their message count, so you can cut the thread down to one person.</p></div></div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>Can search work like it does in WhatsApp?</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>Yes. Matches light up in place, it starts at the newest one, and the arrows (or Enter and Shift+Enter) step through them with a "3 of 7" count.</p>
+          <div class="chip-row"><button class="chip" data-act="search">Show search</button><button class="chip" data-act="files">Show the Files tab</button></div></div></div>
+
+        <div class="step"><b>05</b> Beyond Chrome</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>Can I add this to the Chrome Web Store now? How do I support other browsers, and do I need a domain for Firefox or Edge?</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <table>
+            <tr><th>Store</th><th>What it needs</th></tr>
+            <tr><td>Chrome, Edge, Brave, Arc, Opera</td><td>One shared package</td></tr>
+            <tr><td>Firefox</td><td>A slightly different package and its own add-on ID</td></tr>
+            <tr><td>Outlook</td><td>Its own page reader, parked until there's a test account</td></tr>
+          </table>
+          <p>Neither Firefox nor Edge needs a domain to publish.</p></div></div>
+
+        <div class="step"><b>06</b> A name</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>Threadline already exists, and rollitup.org is taken. Find something that isn't. … I just got unfoldthread.run.</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>Then it's <b>Unfold Thread</b>, on unfoldthread.run, with hello@unfoldthread.run as the support address.</p></div></div>
+
+        <div class="step"><b>07</b> A site that's found</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>Let's build a one-page site with a privacy page and a fictional thread, and a "Who it's for" section for lawyers, design firms and consulting agencies. Check search volume for keywords and optimize for them.</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>The stores need a privacy policy and a support page anyway, so the site does double duty.</p>
+          <ul>
+            <li>Google Trends checks shaped the title, headings and FAQ around how people actually search.</li>
+            <li>Every screen uses a fictional case, <b>Brindlewood Homes v Calder &amp; Finch</b>: ten messages over two and a half years, so no real client email ever appears.</li>
+          </ul></div></div>
+
+        <div class="step"><b>08</b> Visual direction</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>Use the Lunera template as a guide for look and feel, without copying it. … The site looks a little plain, with no motion, and the colors feel off. Can the main color be a light lavender?</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>Lavender now runs across the site, the extension and its icons, in light and dark modes, with an animated background, interactive feature cards and a hero built from the extension's own interface.</p></div></div>
+
+        <div class="step"><b>09</b> Shipping and store review</div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>Push it to GitHub, I'm publishing with Vercel. Then help me connect the domain from Hostinger, fill out the Chrome Store fields, and make a 15-second promo video.</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <p>The site is live with HTTPS and the email records intact. The listing has copy for every field, a justification for each permission, four 1280×800 screenshots, promo tiles and a 15-second film animated from the real interface.</p>
+          <div class="chip-row"><button class="chip" data-act="video">Play the promo film</button></div></div></div>
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>It got rejected for too many keywords in the description. We need to follow the guidelines.</p></div></div>
+        <div class="msg ai"><div class="av">C</div><div class="bub"><div class="who2">Claude</div>
+          <table>
+            <tr><th>Store feedback</th><th>Fix</th></tr>
+            <tr><td>Support URL not reachable</td><td>A dedicated support page</td></tr>
+            <tr><td>Contact email not verified</td><td>hello@unfoldthread.run, verified</td></tr>
+            <tr><td>Too many keywords</td><td>No keyword more than three times, no list of professions</td></tr>
+          </table></div></div>
+
+        <div class="msg me"><div class="av">PG</div><div class="bub"><div class="who2">Pinky</div>
+          <p>The extension is live on the Chrome Web Store. <a href="#changed">See what I learned →</a></p></div></div>
+
+      </div>
+      <div class="foot">The conversation is condensed from my working sessions. Every screen shows an invented legal case, so no real email appears anywhere.</div>
+    </div>
+
+    <!-- ======================= PRODUCT ======================= -->
+    <div class="stage" id="demo-live">
+      <div class="stage-card light">
+        <div class="stage-bar">
+          <b>The product</b>
+          <button data-act="video" class="on">Promo film</button>
+          <button data-act="timeline">Conversation</button>
+          <button data-act="files">Files</button>
+          <button data-act="search">Search</button>
+          <a class="cta" href="https://chromewebstore.google.com/detail/dbhomiflemkmfahmcfdmliedakgndmbl" target="_blank" rel="noopener">Add to Chrome ↗</a>
+        </div>
+        <div class="views">
+          <figure class="view on" data-view="video">
+            <video src="unfold/promo.mp4" poster="unfold/promo.jpg" muted loop playsinline controls preload="metadata" aria-label="15-second promo film for Unfold Thread"></video>
+          </figure>
+          <figure class="view" data-view="timeline">
+            <img src="unfold/timeline-light.webp" alt="A ten-message legal thread shown as one dated conversation, with gaps marked between replies" loading="lazy">
+            <figcaption>Every message in date order, with the gaps marked</figcaption>
+          </figure>
+          <figure class="view" data-view="files">
+            <img src="unfold/files-light.webp" alt="The Files tab listing every attachment in the thread, with sender and date" loading="lazy">
+            <figcaption>Every attachment in one list</figcaption>
+          </figure>
+          <figure class="view" data-view="search">
+            <img src="unfold/search-light.webp" alt="Search inside the thread, with the word mediation highlighted and a match count" loading="lazy">
+            <figcaption>WhatsApp-style search inside the thread</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="block" id="changed">
+  <div class="wrap">
+    <div class="eyebrow">Key takeaways</div>
+    <h2>What I learned shipping it</h2>
+    <p class="sub">Unfold Thread is the first product I took from idea to a public store listing on my own: the extension, the brand, the website, the store assets and the review process.</p>
+    <div class="takeaways">
+      <div class="card"><h3>Privacy as the product</h3><p>For lawyers, a tool that reads client email has to prove it keeps nothing. No network calls, no storage, and an audit script anyone can run.</p></div>
+      <div class="card"><h3>A fictional case for every screen</h3><p>One invented legal thread powers the screenshots, the site, the store listing and the film, so real email never appears anywhere.</p></div>
+      <div class="card"><h3>Built from familiar patterns</h3><p>Search works like WhatsApp and people show as chips, so a thread spanning years feels like a chat anyone already knows how to read.</p></div>
+      <div class="card"><h3>Review is part of the design</h3><p>Store feedback on support, contact and keywords was fixed one item at a time, and each fix made the listing clearer.</p></div>
+    </div>
+    <p class="sub" style="margin-top:30px"><a href="https://unfoldthread.run" target="_blank" rel="noopener">Visit unfoldthread.run ↗</a> · <a href="https://chromewebstore.google.com/detail/dbhomiflemkmfahmcfdmliedakgndmbl" target="_blank" rel="noopener">Add to Chrome ↗</a></p>
+  </div>
+</section>
+
+<footer><div class="wrap">Pinky Gohil · Associate Principal of Design, NeenOpal · <a href="https://pinkygohil.github.io">pinkygohil.work</a></div></footer>
+
+<script>
+/* reveal chat messages as they scroll in */
+(function(){
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+  }), {threshold:.12});
+  document.querySelectorAll('.msg').forEach(m => io.observe(m));
+})();
+
+/* switch the product panel from the bar or from chat chips */
+const views = document.querySelectorAll('.view');
+const barButtons = document.querySelectorAll('.stage-bar button[data-act]');
+const video = document.querySelector('.view video');
+function show(name){
+  if (matchMedia('(max-width:1000px)').matches && !document.body.classList.contains('show-booth')){
+    document.body.classList.add('show-booth');
+    tabBooth.classList.add('on'); tabChat.classList.remove('on');
+  }
+  views.forEach(v => v.classList.toggle('on', v.dataset.view === name));
+  barButtons.forEach(b => b.classList.toggle('on', b.dataset.act === name));
+  if (name === 'video'){ try { video.currentTime = 0; video.play().catch(()=>{}); } catch(e){} }
+  else { video.pause(); }
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]'); if (t) show(t.dataset.act);
+});
+
+/* play the film only while it's on screen */
+const vio = new IntersectionObserver(([e]) => {
+  if (!video.closest('.view').classList.contains('on')) return;
+  if (e.isIntersecting && !matchMedia('(prefers-reduced-motion:reduce)').matches) video.play().catch(()=>{});
+  else video.pause();
+}, {threshold:.4});
+vio.observe(video);
+
+/* mobile tabs */
+const tabChat = document.getElementById('tabChat'), tabBooth = document.getElementById('tabBooth');
+tabChat.onclick = () => { document.body.classList.remove('show-booth'); tabChat.classList.add('on'); tabBooth.classList.remove('on'); };
+tabBooth.onclick = () => { document.body.classList.add('show-booth'); tabBooth.classList.add('on'); tabChat.classList.remove('on'); };
+</script>
+</body>
+</html>
